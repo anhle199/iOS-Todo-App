@@ -52,7 +52,7 @@ class BottomBarView: UIView {
     }()
     
     
-    // MARK: - Property Observes
+    // MARK: - Observed Properties
     var taskCountValue: String = "" {
         didSet {
             taskCountLabel.text = taskCountValue
@@ -119,11 +119,6 @@ class BottomBarView: UIView {
             selectedDateLabel.topAnchor.constraint(equalTo: selectedDateView.topAnchor),
             selectedDateLabel.trailingAnchor.constraint(equalTo: selectedDateView.trailingAnchor),
         ])
-    }
-    
-    func configure(with viewModel: BottomBarViewViewModel) {
-        taskCountValue = viewModel.taskCountValue
-        selectedDateValue = viewModel.getSelectedDateAndTime()
     }
     
 }

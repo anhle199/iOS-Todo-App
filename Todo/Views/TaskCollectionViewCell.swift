@@ -129,22 +129,18 @@ class TaskCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Delegation Pattern
     weak var delegate: TaskCollectionViewCellDelegate?
+
     
-    
-    // MARK: - Property Observes
+    // MARK: - Observed Properties
     var taskNameValue: String = "" {
-        didSet {
-            taskNameLabel.text = taskNameValue
-        }
+        didSet { taskNameLabel.text = taskNameValue }
     }
     
     var taskDescriptionValue: String = "" {
-        didSet {
-            taskDescriptionLabel.text = taskDescriptionValue
-        }
+        didSet { taskDescriptionLabel.text = taskDescriptionValue }
     }
     
-    var dueTimeValue: Date = .now {
+    var dueTimeValue: Date = .getEndsOfDate(from: .now) ?? .now {
         didSet {
             let formatter = DateFormatter()
             formatter.timeStyle = .short
@@ -312,12 +308,6 @@ class TaskCollectionViewCell: UICollectionViewCell {
         layer.cornerRadius = radius
     }
     
-    func configure(with viewModel: TaskCollectionViewCellViewModel) {
-        taskNameValue = viewModel.taskName
-        taskDescriptionValue = viewModel.taskDescription
-        dueTimeValue = viewModel.getDueDateAndTime()
-    }
-    
     
     // MARK: - Button Actions
     @objc private func didTapStar() {
@@ -338,4 +328,28 @@ class TaskCollectionViewCell: UICollectionViewCell {
         delegate.taskCollectionViewCellDidToggleCheckmark(self)
     }
     
+}
+
+
+extension Date {
+    // Returns a moment which is today at 23:59:59 or nil
+    static func getEndsOfDate(from date: Date) -> Date? {
+        let components = Calendar.current.dateComponents(in: .current, from: date)
+        guard let day = components.day,
+              let month = components.month,
+              let year = components.year
+        else {
+            return nil
+        }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy HH:mm:ss"
+        
+        return formatter.date(
+            from: String(
+                format: "%d/%d/%d %d:%d:%d",
+                day, month, year, 23, 59, 59
+            )
+        )
+    }
 }

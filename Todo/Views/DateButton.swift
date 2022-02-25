@@ -62,7 +62,7 @@ final class DateButton: UIButton {
     }()
     
     
-    // MARK: - Property Observes
+    // MARK: - Observed Properties
     var dayNumberValue: Int = 1 {
         didSet { dayNumberLabel.text = String(format: "%02d", dayNumberValue) }
     }
@@ -126,11 +126,6 @@ final class DateButton: UIButton {
             circleView.centerXAnchor.constraint(equalTo: backgroundFrameCircleView.centerXAnchor),
             circleView.centerYAnchor.constraint(equalTo: backgroundFrameCircleView.centerYAnchor),
         ])
-    }
-    
-    func configure(with viewModel: DateButtonViewModel) {
-        dayNumberValue = viewModel.getDayNumber()
-        weekdaySymbolValue = viewModel.weekdayText
     }
     
     func makeRoundedCorners(withRadius radius: CGFloat) {

@@ -132,12 +132,9 @@ class HomeViewController: UIViewController {
                 from: HomeViewController.daysOfWeek[i]
             )
             
-            dateButtons[i].configure(
-                with: .init(
-                    dayNumber: dateComponent.day ?? 1,
-                    weekdayInAbbreviation: shortWeekdaySymbols[i]
-                )
-            )
+            dateButtons[i].dayNumberValue = dateComponent.day ?? 1
+            dateButtons[i].weekdaySymbolValue = shortWeekdaySymbols[i]
+            
             dateButtons[i].addTarget(
                 self,
                 action: #selector(didTapDateButton),
