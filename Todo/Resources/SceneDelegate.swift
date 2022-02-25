@@ -15,8 +15,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
+        // Home view controller
+        let homeVC = HomeViewController()
+        homeVC.title = "Tasks"
+        homeVC.navigationItem.largeTitleDisplayMode = .never
+        
+        // Navigation controller
+        let navigationVC = UINavigationController(rootViewController: homeVC)
+        navigationVC.navigationBar.prefersLargeTitles = false
+        navigationVC.navigationBar.tintColor = .label
+        
+        // Window
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = ViewController()
+        window.rootViewController = navigationVC
         window.makeKeyAndVisible()
         
         self.window = window
