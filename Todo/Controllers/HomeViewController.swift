@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class HomeViewController: UIViewController {
 
@@ -72,10 +73,62 @@ class HomeViewController: UIViewController {
     
     
     // MARK: - Stored Properties
-    private var selectingIndex: Int?
+    private let realm = try! Realm()
+    private var taskItems: Results<TaskItem>?
+    private var sortedTaskItems = [TaskItem]()  // a sorted array of taskItems
+    
+    private var selectingDateButtonIndex: Int?
+
+    
+    // MARK: - Datebase Manipulation Methods
+    func loadTaskItems() {
+        let selectedDate: Date
+        if selectingDateButtonIndex != nil {
+            selectedDate = HomeViewController.daysOfWeek[selectingDateButtonIndex!]
+        } else {
+            selectedDate = .now
+        }
+        
+        let startOfSelectedDate = Date.getStartOfDate(from: selectedDate)
+        let endOfSelectedDate = Date.getEndOfDate(from: selectedDate)
+        
+        // Load and filter
+        taskItems = realm.objects(TaskItem.self).where {
+            $0.dueTime >= startOfSelectedDate && $0.dueTime <= endOfSelectedDate
+        }
+        
+        sortTaskItems()
+        
+        taskCollectionView.reloadData()
+    }
+    
+    private func sortTaskItems() {
+        guard let taskItems = taskItems else {
+            return
+        }
+
+        sortedTaskItems = taskItems.sorted { lhs, rhs in
+            // difference of status of completion => uncomplete first
+            if lhs.isDone != rhs.isDone {
+                return !lhs.isDone
+            }
+
+            // same due time => important first
+            if lhs.dueTime == rhs.dueTime {
+                if lhs.isImportant == rhs.isImportant {
+                    return lhs.createdAt <= rhs.createdAt
+                }
+
+                return lhs.isImportant
+            }
+
+            // ascending due time
+            return lhs.dueTime < rhs.dueTime
+        }
+    }
     
     
-    // MARK: - Initializers
+    // MARK: - View Controller's Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -85,6 +138,9 @@ class HomeViewController: UIViewController {
         setUpDateButtonsView()
         setUpBottomBar()
         setUpTaskListView()
+        
+        loadTaskItems()
+        updateBottomBar()
     }
     
     
@@ -120,7 +176,8 @@ class HomeViewController: UIViewController {
     
     private func setUpDateButtonsView() {
         var constraints = [NSLayoutConstraint]()
-        let shortWeekdaySymbols = Calendar.current.shortWeekdaySymbols
+        var shortWeekdaySymbols = Calendar.current.shortWeekdaySymbols
+        shortWeekdaySymbols.append(shortWeekdaySymbols.remove(at: 0))
         
         // Add stack view of list of date buttons to view
         view.addSubview(dateButtonsHorizontalView)
@@ -154,7 +211,7 @@ class HomeViewController: UIViewController {
         if let index = HomeViewController.daysOfWeek.firstIndex(
             where: { Calendar.current.isDateInToday($0) }
         ) {
-            self.selectingIndex = index
+            self.selectingDateButtonIndex = index
             dateButtons[index].setColors(for: .selecting, withAnimation: false)
         }
         
@@ -207,15 +264,7 @@ class HomeViewController: UIViewController {
     }
     
     private func setUpBottomBar() {
-        let selectedDate: Date
-        if let index = selectingIndex {
-            selectedDate = HomeViewController.daysOfWeek[index]
-        } else {
-            selectedDate = .now
-        }
-        
-        bottomBarView.taskCountValue = "3 tasks / 1 completed"
-        bottomBarView.selectedDateValue = selectedDate
+        updateBottomBar()
     
         view.addSubview(bottomBarView)
         
@@ -246,15 +295,32 @@ class HomeViewController: UIViewController {
     }
     
     @objc private func didTapDateButton(_ sender: DateButton) {
-        if let selectingIndex = selectingIndex {
-            dateButtons[selectingIndex].updateUI(for: .unselected)
+        if let selectingDateButtonIndex = selectingDateButtonIndex {
+            dateButtons[selectingDateButtonIndex].updateUI(for: .unselected)
         }
         
-        self.selectingIndex = sender.tag
+        self.selectingDateButtonIndex = sender.tag
         sender.updateUI(for: .selecting)
-        bottomBarView.selectedDateValue = HomeViewController.daysOfWeek[sender.tag]
+    
+        loadTaskItems()
+        updateBottomBar()
+    }
+    
+    private func updateBottomBar() {
+        guard let selectingIndex = selectingDateButtonIndex,
+              taskItems != nil
+        else {
+            return
+        }
         
-        print("HomeViewController - didTapDateButton(_:) - \(selectingIndex!)")
+        bottomBarView.selectedDateValue = HomeViewController.daysOfWeek[selectingIndex]
+        
+        if sortedTaskItems.isEmpty {
+            bottomBarView.taskCountValue = "No tasks"
+        } else {
+            let completedTaskCount = sortedTaskItems.filter({ $0.isDone }).count
+            bottomBarView.taskCountValue = "\(sortedTaskItems.count) tasks / \(completedTaskCount) completed"
+        }
     }
 }
 
@@ -278,7 +344,7 @@ extension HomeViewController {
         let days = weekdays?.compactMap { weekday in
             return calendar.date(
                 byAdding: .day,
-                value: weekday - dayOfWeek,
+                value: weekday - dayOfWeek + 1,  // starts from Monday
                 to: today
             )
         }
@@ -331,23 +397,21 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 9
+        return taskItems?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: TaskCollectionViewCell.identifier,
-            for: indexPath
-        ) as? TaskCollectionViewCell else {
+        guard let _ = taskItems,
+              let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TaskCollectionViewCell.identifier,
+                for: indexPath
+              ) as? TaskCollectionViewCell
+        else {
             return UICollectionViewCell()
         }
         
         cell.delegate = self
-        cell.taskNameValue = "Task name"
-        cell.taskDescriptionValue = "A truncated description"
-        cell.dueTimeValue = .now
-        cell.isMarkedAsImportant = true
-        cell.isCompletedTask = false
+        cell.setDataModel(sortedTaskItems[indexPath.row])
         
         return cell
     }
@@ -358,24 +422,52 @@ extension HomeViewController: UICollectionViewDataSource {
 // MARK: - Conform UICollectionViewDelegate and TaskCollectionViewCellDelegate protocol
 extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDelegate {
     
+    private func index(of taskItem: TaskItem) -> Int? {
+        return taskItems?.firstIndex(where: { $0.createdAt == taskItem.createdAt })
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         print("HomeViewController - collectionView(_:didSelectItemAt:) - \(indexPath)")
     }
     
     func taskCollectionViewCellDidToggleStar(_ cell: TaskCollectionViewCell) {
-        if let indexPath = taskCollectionView.indexPath(for: cell) {
-            print("HomeViewController - taskCollectionViewCellDidToggleStar(_:) - \(indexPath)")
-        } else {
-            print("HomeViewController - taskCollectionViewCellDidToggleStar(_:)")
+        guard let indexPath = taskCollectionView.indexPath(for: cell),
+              let taskItemIndex = index(of: sortedTaskItems[indexPath.row])
+        else {
+            return
+        }
+        
+        do {
+            try realm.write {
+                taskItems![taskItemIndex].isImportant.toggle()
+            }
+            
+            sortTaskItems()
+            taskCollectionView.reloadData()
+        } catch {
+            print("Error when toggling star icon button, \(error.localizedDescription)")
         }
     }
     
     func taskCollectionViewCellDidToggleCheckmark(_ cell: TaskCollectionViewCell) {
-        if let indexPath = taskCollectionView.indexPath(for: cell) {
-            print("HomeViewController - taskCollectionViewCellDidToggleCheckmark(_:) - \(indexPath)")
-        } else {
-            print("HomeViewController - taskCollectionViewCellDidToggleCheckmark(_:)")
+        guard let indexPath = taskCollectionView.indexPath(for: cell),
+              let taskItemIndex = index(of: sortedTaskItems[indexPath.row])
+        else {
+            return
+        }
+        
+        do {
+            try realm.write {
+                taskItems![taskItemIndex].isDone.toggle()
+            }
+            
+            sortTaskItems()
+            updateBottomBar()
+            
+            taskCollectionView.reloadData()
+        } catch {
+            print("Error when toggling checkmark icon button, \(error.localizedDescription)")
         }
     }
     

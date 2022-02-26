@@ -6,19 +6,13 @@
 //
 
 import Foundation
+import RealmSwift
 
-struct TaskItem {
-    var title: String
-    var description: String
-    var dueTime: Date?
-    var isImportant: Bool
-    var isDone: Bool
-    
-    static let `default` = TaskItem(
-        title: "",
-        description: "",
-        dueTime: nil,
-        isImportant: false,
-        isDone: false
-    )
+class TaskItem: Object {
+    @Persisted var title: String
+    @Persisted var taskDescription: String = ""
+    @Persisted var dueTime: Date
+    @Persisted var isImportant: Bool = false
+    @Persisted var isDone: Bool = false
+    @Persisted var createdAt: Date
 }

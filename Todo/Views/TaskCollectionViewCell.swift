@@ -72,7 +72,7 @@ class TaskCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .systemBackground
-        label.textAlignment = .center
+        label.textAlignment = .right
         label.font = .systemFont(ofSize: 17, weight: .semibold)
         label.numberOfLines = 1
         label.backgroundColor = .clear
@@ -140,7 +140,7 @@ class TaskCollectionViewCell: UICollectionViewCell {
         didSet { taskDescriptionLabel.text = taskDescriptionValue }
     }
     
-    var dueTimeValue: Date = .getEndsOfDate(from: .now) ?? .now {
+    var dueTimeValue: Date = .getEndOfDate(from: .now) {
         didSet {
             let formatter = DateFormatter()
             formatter.timeStyle = .short
@@ -156,8 +156,8 @@ class TaskCollectionViewCell: UICollectionViewCell {
     var isMarkedAsImportant: Bool = false {
         didSet {
             let systemImageName = isMarkedAsImportant
-            ? Constants.IconName.star.unmark
-            : Constants.IconName.star.marked
+            ? Constants.IconName.star.marked
+            : Constants.IconName.star.unmark
            
             starButton.setImage(
                 UIImage(
@@ -174,8 +174,8 @@ class TaskCollectionViewCell: UICollectionViewCell {
     var isCompletedTask: Bool = false {
         didSet {
             let systemImageName = isCompletedTask
-            ? Constants.IconName.checkmark.unmark
-            : Constants.IconName.checkmark.marked
+            ? Constants.IconName.checkmark.marked
+            : Constants.IconName.checkmark.unmark
             
             checkmarkButton.setImage(
                 UIImage(
@@ -297,8 +297,9 @@ class TaskCollectionViewCell: UICollectionViewCell {
             dueTimeLabel.topAnchor.constraint(
                 equalTo: dueTimeView.topAnchor
             ),
-            dueTimeLabel.centerXAnchor.constraint(
-                equalTo: dueTimeView.centerXAnchor
+            dueTimeLabel.trailingAnchor.constraint(
+                equalTo: dueTimeView.trailingAnchor,
+                constant: -horizontalPadding / 2
             ),
         ])
     }
@@ -306,6 +307,14 @@ class TaskCollectionViewCell: UICollectionViewCell {
     func makeRoundedCorners(withRadius radius: CGFloat) {
         layer.masksToBounds = true
         layer.cornerRadius = radius
+    }
+    
+    func setDataModel(_ task: TaskItem) {
+        taskNameValue = task.title
+        taskDescriptionValue = task.taskDescription
+        dueTimeValue = task.dueTime
+        isMarkedAsImportant = task.isImportant
+        isCompletedTask = task.isDone
     }
     
     
@@ -328,28 +337,4 @@ class TaskCollectionViewCell: UICollectionViewCell {
         delegate.taskCollectionViewCellDidToggleCheckmark(self)
     }
     
-}
-
-
-extension Date {
-    // Returns a moment which is today at 23:59:59 or nil
-    static func getEndsOfDate(from date: Date) -> Date? {
-        let components = Calendar.current.dateComponents(in: .current, from: date)
-        guard let day = components.day,
-              let month = components.month,
-              let year = components.year
-        else {
-            return nil
-        }
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yyyy HH:mm:ss"
-        
-        return formatter.date(
-            from: String(
-                format: "%d/%d/%d %d:%d:%d",
-                day, month, year, 23, 59, 59
-            )
-        )
-    }
 }
