@@ -67,7 +67,7 @@ final class DateButton: UIButton {
         didSet { dayNumberLabel.text = String(format: "%02d", dayNumberValue) }
     }
     
-    var weekdaySymbolValue: String = "Mon" {
+    var weekdaySymbolValue: String = "Sun" {
         didSet { weekdayLabel.text = weekdaySymbolValue }
     }
     
@@ -88,7 +88,7 @@ final class DateButton: UIButton {
            let weekday = todayDateComponents.weekday {
             
             dayNumberValue = dayNumber
-            weekdaySymbolValue = Calendar.current.shortWeekdaySymbols[weekday - 1]
+            weekdaySymbolValue = Calendar.current.shortWeekdaySymbols[weekday]  // - 1]
         }
     }
     

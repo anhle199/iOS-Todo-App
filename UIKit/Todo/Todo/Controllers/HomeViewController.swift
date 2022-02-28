@@ -71,6 +71,14 @@ class HomeViewController: UIViewController {
         return bottomBarView
     }()
     
+    private let filterView: FilterView = {
+        let filterView = FilterView()
+        filterView.translatesAutoresizingMaskIntoConstraints = false
+        filterView.isHidden = true
+
+        return filterView
+    }()
+    
     
     // MARK: - Stored Properties
     private let realm = try! Realm()
@@ -81,7 +89,7 @@ class HomeViewController: UIViewController {
 
     
     // MARK: - Datebase Manipulation Methods
-    func loadTaskItems() {
+    func loadTaskItems(withPredicateFormat predicateFormat: String? = nil) {
         let selectedDate: Date
         if selectingDateButtonIndex != nil {
             selectedDate = HomeViewController.daysOfWeek[selectingDateButtonIndex!]
@@ -97,8 +105,11 @@ class HomeViewController: UIViewController {
             $0.dueTime >= startOfSelectedDate && $0.dueTime <= endOfSelectedDate
         }
         
-        sortTaskItems()
+        if let predicateFormat = predicateFormat {
+            self.taskItems = taskItems?.filter(predicateFormat)
+        }
         
+        sortTaskItems()
         taskCollectionView.reloadData()
     }
     
@@ -138,6 +149,7 @@ class HomeViewController: UIViewController {
         setUpDateButtonsView()
         setUpBottomBar()
         setUpTaskListView()
+        setUpFilterView()
         
         loadTaskItems()
         updateBottomBar()
@@ -176,8 +188,8 @@ class HomeViewController: UIViewController {
     
     private func setUpDateButtonsView() {
         var constraints = [NSLayoutConstraint]()
-        var shortWeekdaySymbols = Calendar.current.shortWeekdaySymbols
-        shortWeekdaySymbols.append(shortWeekdaySymbols.remove(at: 0))
+        let shortWeekdaySymbols = Calendar.current.shortWeekdaySymbols
+//        shortWeekdaySymbols.append(shortWeekdaySymbols.remove(at: 0))
         
         // Add stack view of list of date buttons to view
         view.addSubview(dateButtonsHorizontalView)
@@ -279,37 +291,28 @@ class HomeViewController: UIViewController {
             bottomBarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         ])
     }
-
     
-    // MARK: - Button Actions
-    @objc private func didTapFilterButton() {
-        print("HomeViewController - didTapFilterButton()")
-    }
-    
-    @objc private func didTapSearchButton() {
-        print("HomeViewController - didTapSearchButton()")
-    }
-    
-    @objc private func didTapAddButton() {
-        print("HomeViewController - didTapAddButton()")
-    }
-    
-    @objc private func didTapDateButton(_ sender: DateButton) {
-        if let selectingDateButtonIndex = selectingDateButtonIndex {
-            dateButtons[selectingDateButtonIndex].updateUI(for: .unselected)
-        }
+    private func setUpFilterView() {
+        filterView.delegate = self
         
-        self.selectingDateButtonIndex = sender.tag
-        sender.updateUI(for: .selecting)
-    
-        loadTaskItems()
-        updateBottomBar()
+        view.addSubview(filterView)
+        
+        NSLayoutConstraint.activate([
+            filterView.topAnchor.constraint(equalTo: view.topAnchor),
+            filterView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            filterView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            filterView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        ])
     }
     
+    
+    // MARK: - UI Modification Methods
     private func updateBottomBar() {
         guard let selectingIndex = selectingDateButtonIndex,
               taskItems != nil
         else {
+            bottomBarView.selectedDateValue = .now
+            bottomBarView.taskCountValue = "No tasks"
             return
         }
         
@@ -322,6 +325,36 @@ class HomeViewController: UIViewController {
             bottomBarView.taskCountValue = "\(sortedTaskItems.count) tasks / \(completedTaskCount) completed"
         }
     }
+
+    
+    // MARK: - Button Actions
+    @objc private func didTapFilterButton() {
+        bottomBarView.isHidden = true
+        filterView.isHidden = false
+    }
+    
+    @objc private func didTapSearchButton() {
+        print("HomeViewController - didTapSearchButton()")
+    }
+    
+    @objc private func didTapAddButton() {
+        print("HomeViewController - didTapAddButton()")
+    }
+    
+    @objc private func didTapDateButton(_ sender: DateButton) {
+        filterView.setDefaultFilterValues()
+        
+        if let selectingDateButtonIndex = selectingDateButtonIndex {
+            dateButtons[selectingDateButtonIndex].updateUI(for: .unselected)
+        }
+        
+        self.selectingDateButtonIndex = sender.tag
+        sender.updateUI(for: .selecting)
+    
+        loadTaskItems()
+        updateBottomBar()
+    }
+    
 }
 
 
@@ -344,7 +377,7 @@ extension HomeViewController {
         let days = weekdays?.compactMap { weekday in
             return calendar.date(
                 byAdding: .day,
-                value: weekday - dayOfWeek + 1,  // starts from Monday
+                value: weekday - dayOfWeek,  // + 1,  // starts from Monday
                 to: today
             )
         }
@@ -443,8 +476,7 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
                 taskItems![taskItemIndex].isImportant.toggle()
             }
             
-            sortTaskItems()
-            taskCollectionView.reloadData()
+            filterView.callApplyButtonAction()
         } catch {
             print("Error when toggling star icon button, \(error.localizedDescription)")
         }
@@ -462,13 +494,120 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
                 taskItems![taskItemIndex].isDone.toggle()
             }
             
-            sortTaskItems()
-            updateBottomBar()
-            
-            taskCollectionView.reloadData()
+            filterView.callApplyButtonAction()
         } catch {
             print("Error when toggling checkmark icon button, \(error.localizedDescription)")
         }
+    }
+    
+}
+
+
+// MARK: - Conforms FilterViewDelegate
+extension HomeViewController: FilterViewDelegate {
+    
+    func filterViewWillAppear(_ filterView: FilterView) {
+        navigationController?.navigationBar.isUserInteractionEnabled = false
+    }
+    
+    func filterViewDidDisappear(_ filterView: FilterView) {
+        navigationController?.navigationBar.isUserInteractionEnabled = true
+    }
+    
+    func filterViewDidTapClose(_ filterView: FilterView) {
+        bottomBarView.isHidden = false
+    }
+    
+    func filterViewDidTapApply(_ filterView: FilterView, withSelectedStates states: [TaskState]) {
+        print(states)
+        
+        var copiedStates = states
+        
+        // If the 'states' array contains both .uncomplete and .completed, all tasks is satified.
+        if copiedStates.contains(.uncomplete) && copiedStates.contains(.completed) {
+            copiedStates.removeAll(where: { $0 == .uncomplete || $0 == .completed })
+        }
+        
+        var predicateFormat = ""
+        var values = [NSNumber]()
+        
+        if let index = copiedStates.firstIndex(of: .important) {
+            predicateFormat += "isImportant == %@ AND "
+            values.append(.init(booleanLiteral: true))
+            copiedStates.remove(at: index)
+        }
+        
+        if !copiedStates.isEmpty {
+            // copiedStates only contains .uncomplete or .completed
+            
+            let state = copiedStates.first
+            switch state {
+                case .uncomplete:
+                    predicateFormat += "isDone <> %@"
+                    values.append(.init(booleanLiteral: state == .uncomplete))
+                case .completed:
+                    predicateFormat += "isDone == %@"
+                    values.append(.init(booleanLiteral: state == .completed))
+                default:
+                    break
+                }
+        } else if !predicateFormat.isEmpty {
+            predicateFormat.removeLast(5)  // remove " AND "
+        }
+        
+        if predicateFormat.isEmpty {
+            loadTaskItems()
+        } else {
+            let predicate = NSPredicate(
+                format: predicateFormat,
+                argumentArray: values
+            )
+            loadTaskItems(withPredicateFormat: predicate.predicateFormat)
+        }
+        
+        updateBottomBar()
+        bottomBarView.isHidden = false
+        
+//        var copiedStates = states
+//        var predicateFormat = ""
+//        var values = [NSNumber]()
+//
+//        if let index = copiedStates.firstIndex(of: .important) {
+//            predicateFormat += "isImportant == %@ AND "
+//            values.append(.init(booleanLiteral: true))
+//            copiedStates.remove(at: index)
+//        }
+//
+//        if !copiedStates.isEmpty {
+//            var subPredicateFormat = ""
+//
+//            for state in copiedStates {
+//                switch state {
+//                case .uncomplete:
+//                    subPredicateFormat += "isDone <> %@ OR "
+//                    values.append(.init(booleanLiteral: state == .uncomplete))
+//                case .completed:
+//                    subPredicateFormat += "isDone == %@ OR "
+//                    values.append(.init(booleanLiteral: state == .completed))
+//                default:
+//                    break
+//                }
+//            }
+//
+//            subPredicateFormat.removeLast(4)  // remove " OR "
+//            predicateFormat += "(\(subPredicateFormat))"
+//        } else if !predicateFormat.isEmpty {
+//            predicateFormat.removeLast(5)  // remove " AND "
+//        }
+//
+//        let predicate = NSPredicate(
+//            format: predicateFormat,
+//            argumentArray: values
+//        )
+//        loadTaskItems(withPredicateFormat: predicate.predicateFormat)
+//
+//        updateBottomBar()
+//        bottomBarView.isHidden = false
     }
     
 }
