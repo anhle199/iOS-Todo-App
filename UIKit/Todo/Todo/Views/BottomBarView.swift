@@ -22,6 +22,7 @@ class BottomBarView: UIView {
     private let taskCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "No tasks"
         label.textColor = .label
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 14, weight: .semibold)
@@ -52,13 +53,14 @@ class BottomBarView: UIView {
     }()
     
     
-    // MARK: - Observed Properties
-    var taskCountValue: String = "" {
-        didSet {
-            taskCountLabel.text = taskCountValue
-        }
+    // MARK: - Stored Properties
+    var taskCountValue: String {
+        get { taskCountLabel.text ?? "" }
+        set { self.taskCountLabel.text = newValue }
     }
     
+    
+    // MARK: - Observed Properties
     var selectedDateValue: Date = .now {
         didSet {
             let formatter = DateFormatter()

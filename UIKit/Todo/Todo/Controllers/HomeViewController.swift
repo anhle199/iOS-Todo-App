@@ -51,11 +51,7 @@ class HomeViewController: UIViewController {
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
         
-        // Register collection view cells
-        collectionView.register(
-            UICollectionViewCell.self,
-            forCellWithReuseIdentifier: "UICollectionViewCell"
-        )
+        // Register collection view cell
         collectionView.register(
             TaskCollectionViewCell.self,
             forCellWithReuseIdentifier: TaskCollectionViewCell.identifier
@@ -79,6 +75,19 @@ class HomeViewController: UIViewController {
         return filterView
     }()
     
+    private let connectionAlertVC: UIAlertController = {
+        let alert = UIAlertController(
+            title: "Connection",
+            message: "Your connection is unstable or disconnected.",
+            preferredStyle: .alert
+        )
+        
+        let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        return alert
+    }()
+    
     
     // MARK: - Stored Properties
     private let realm = try! Realm()
@@ -87,57 +96,6 @@ class HomeViewController: UIViewController {
     
     private var selectingDateButtonIndex: Int?
 
-    
-    // MARK: - Datebase Manipulation Methods
-    func loadTaskItems(withPredicateFormat predicateFormat: String? = nil) {
-        let selectedDate: Date
-        if selectingDateButtonIndex != nil {
-            selectedDate = HomeViewController.daysOfWeek[selectingDateButtonIndex!]
-        } else {
-            selectedDate = .now
-        }
-        
-        let startOfSelectedDate = Date.getStartOfDate(from: selectedDate)
-        let endOfSelectedDate = Date.getEndOfDate(from: selectedDate)
-        
-        // Load and filter
-        taskItems = realm.objects(TaskItem.self).where {
-            $0.dueTime >= startOfSelectedDate && $0.dueTime <= endOfSelectedDate
-        }
-        
-        if let predicateFormat = predicateFormat {
-            self.taskItems = taskItems?.filter(predicateFormat)
-        }
-        
-        sortTaskItems()
-        taskCollectionView.reloadData()
-    }
-    
-    private func sortTaskItems() {
-        guard let taskItems = taskItems else {
-            return
-        }
-
-        sortedTaskItems = taskItems.sorted { lhs, rhs in
-            // difference of status of completion => uncomplete first
-            if lhs.isDone != rhs.isDone {
-                return !lhs.isDone
-            }
-
-            // same due time => important first
-            if lhs.dueTime == rhs.dueTime {
-                if lhs.isImportant == rhs.isImportant {
-                    return lhs.createdAt <= rhs.createdAt
-                }
-
-                return lhs.isImportant
-            }
-
-            // ascending due time
-            return lhs.dueTime < rhs.dueTime
-        }
-    }
-    
     
     // MARK: - View Controller's Life Cycle
     override func viewDidLoad() {
@@ -329,7 +287,6 @@ class HomeViewController: UIViewController {
     
     // MARK: - Button Actions
     @objc private func didTapFilterButton() {
-        bottomBarView.isHidden = true
         filterView.isHidden = false
     }
     
@@ -355,6 +312,59 @@ class HomeViewController: UIViewController {
         updateBottomBar()
     }
     
+}
+
+
+// MARK: - Datebase Manipulation Methods
+extension HomeViewController {
+    func loadTaskItems(withPredicateFormat predicateFormat: String? = nil) {
+        let selectedDate: Date
+        if selectingDateButtonIndex != nil {
+            selectedDate = HomeViewController.daysOfWeek[selectingDateButtonIndex!]
+        } else {
+            selectedDate = .now
+        }
+        
+        let startOfSelectedDate = Date.getStartOfDate(from: selectedDate)
+        let endOfSelectedDate = Date.getEndOfDate(from: selectedDate)
+        
+        // Load and filter
+        taskItems = realm.objects(TaskItem.self).where {
+            $0.dueTime >= startOfSelectedDate && $0.dueTime <= endOfSelectedDate
+        }
+        
+        if let predicateFormat = predicateFormat {
+            self.taskItems = taskItems?.filter(predicateFormat)
+        }
+        
+        sortTaskItems()
+        taskCollectionView.reloadData()
+    }
+    
+    private func sortTaskItems() {
+        guard let taskItems = taskItems else {
+            return
+        }
+        
+        sortedTaskItems = taskItems.sorted { lhs, rhs in
+            // difference of status of completion => uncomplete first
+            if lhs.isDone != rhs.isDone {
+                return !lhs.isDone
+            }
+            
+            // same due time => important first
+            if lhs.dueTime == rhs.dueTime {
+                if lhs.isImportant == rhs.isImportant {
+                    return lhs.createdAt <= rhs.createdAt
+                }
+                
+                return lhs.isImportant
+            }
+            
+            // ascending due time
+            return lhs.dueTime < rhs.dueTime
+        }
+    }
 }
 
 
@@ -461,7 +471,12 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-        print("HomeViewController - collectionView(_:didSelectItemAt:) - \(indexPath)")
+
+        if  let index = index(of: sortedTaskItems[indexPath.row]) {
+            let detailVC = DetailViewController(taskItem: taskItems![index])
+            
+            navigationController?.pushViewController(detailVC, animated: true)
+        }
     }
     
     func taskCollectionViewCellDidToggleStar(_ cell: TaskCollectionViewCell) {
@@ -478,7 +493,7 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
             
             filterView.callApplyButtonAction()
         } catch {
-            print("Error when toggling star icon button, \(error.localizedDescription)")
+            self.present(connectionAlertVC, animated: true)
         }
     }
     
@@ -496,7 +511,7 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
             
             filterView.callApplyButtonAction()
         } catch {
-            print("Error when toggling checkmark icon button, \(error.localizedDescription)")
+            self.present(connectionAlertVC, animated: true)
         }
     }
     
@@ -508,19 +523,15 @@ extension HomeViewController: FilterViewDelegate {
     
     func filterViewWillAppear(_ filterView: FilterView) {
         navigationController?.navigationBar.isUserInteractionEnabled = false
+        bottomBarView.isHidden = true
     }
     
     func filterViewDidDisappear(_ filterView: FilterView) {
         navigationController?.navigationBar.isUserInteractionEnabled = true
-    }
-    
-    func filterViewDidTapClose(_ filterView: FilterView) {
         bottomBarView.isHidden = false
     }
     
     func filterViewDidTapApply(_ filterView: FilterView, withSelectedStates states: [TaskState]) {
-        print(states)
-        
         var copiedStates = states
         
         // If the 'states' array contains both .uncomplete and .completed, all tasks is satified.
