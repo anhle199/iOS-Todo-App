@@ -23,7 +23,7 @@
 		E65F367B27CD21A9009F4E50 /* TaskState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65F367A27CD21A9009F4E50 /* TaskState.swift */; };
 		E65F367D27CD21E0009F4E50 /* DetailCellStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65F367C27CD21E0009F4E50 /* DetailCellStyle.swift */; };
 		E65F368027CD254F009F4E50 /* DetailTableViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65F367F27CD254F009F4E50 /* DetailTableViewControllerViewModel.swift */; };
-		E66FF93927CE7183004067F9 /* TextTableViewCell+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66FF93827CE7183004067F9 /* TextTableViewCell+Delegate.swift */; };
+		E66FF93927CE7183004067F9 /* DetailTableViewCell+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66FF93827CE7183004067F9 /* DetailTableViewCell+Delegate.swift */; };
 		E6A1B7E027CDDE2A003DAB35 /* UIView+ShadowAndBorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A1B7DF27CDDE2A003DAB35 /* UIView+ShadowAndBorder.swift */; };
 		E6B3EA4727CA909800B75EE6 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B3EA4627CA909700B75EE6 /* FilterView.swift */; };
 		E6B3EA4927CA90D600B75EE6 /* UIView+RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B3EA4827CA90D600B75EE6 /* UIView+RoundedCorners.swift */; };
@@ -34,6 +34,8 @@
 		E6E1BD5C27C68F4800DA8286 /* BottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E1BD5B27C68F4800DA8286 /* BottomBarView.swift */; };
 		E6EDFCA827CF1AF50090D105 /* UITapGestureRecognizer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6EDFCA727CF1AF50090D105 /* UITapGestureRecognizer+Extension.swift */; };
 		E6F4E00E27C862D6007ED558 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F4E00D27C862D6007ED558 /* Constants.swift */; };
+		E6F8295D27CF633E00311209 /* EditMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F8295C27CF633E00311209 /* EditMode.swift */; };
+		E6F8295F27CF7CF100311209 /* TextTableViewCell+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F8295E27CF7CF100311209 /* TextTableViewCell+Delegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,7 +57,7 @@
 		E65F367A27CD21A9009F4E50 /* TaskState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskState.swift; sourceTree = "<group>"; };
 		E65F367C27CD21E0009F4E50 /* DetailCellStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCellStyle.swift; sourceTree = "<group>"; };
 		E65F367F27CD254F009F4E50 /* DetailTableViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTableViewControllerViewModel.swift; sourceTree = "<group>"; };
-		E66FF93827CE7183004067F9 /* TextTableViewCell+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextTableViewCell+Delegate.swift"; sourceTree = "<group>"; };
+		E66FF93827CE7183004067F9 /* DetailTableViewCell+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DetailTableViewCell+Delegate.swift"; sourceTree = "<group>"; };
 		E6A1B7DF27CDDE2A003DAB35 /* UIView+ShadowAndBorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+ShadowAndBorder.swift"; sourceTree = "<group>"; };
 		E6B3EA4627CA909700B75EE6 /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
 		E6B3EA4827CA90D600B75EE6 /* UIView+RoundedCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RoundedCorners.swift"; sourceTree = "<group>"; };
@@ -65,6 +67,8 @@
 		E6E1BD5B27C68F4800DA8286 /* BottomBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBarView.swift; sourceTree = "<group>"; };
 		E6EDFCA727CF1AF50090D105 /* UITapGestureRecognizer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITapGestureRecognizer+Extension.swift"; sourceTree = "<group>"; };
 		E6F4E00D27C862D6007ED558 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		E6F8295C27CF633E00311209 /* EditMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMode.swift; sourceTree = "<group>"; };
+		E6F8295E27CF7CF100311209 /* TextTableViewCell+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextTableViewCell+Delegate.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +128,7 @@
 		E650488E27CCC28B0059F592 /* TableCells */ = {
 			isa = PBXGroup;
 			children = (
+				E66FF93827CE7183004067F9 /* DetailTableViewCell+Delegate.swift */,
 				E6EDFCA627CF0E460090D105 /* TextCell */,
 				E650489027CCC2BA0059F592 /* ToggleButtonTableViewCell.swift */,
 				E650489627CCCB7A0059F592 /* PickerTableViewCell.swift */,
@@ -183,6 +188,7 @@
 			children = (
 				E65F367A27CD21A9009F4E50 /* TaskState.swift */,
 				E65F367C27CD21E0009F4E50 /* DetailCellStyle.swift */,
+				E6F8295C27CF633E00311209 /* EditMode.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -208,7 +214,7 @@
 			children = (
 				E650489427CCC4450059F592 /* TextFieldTableViewCell.swift */,
 				E650489A27CCD1030059F592 /* TextViewTableViewCell.swift */,
-				E66FF93827CE7183004067F9 /* TextTableViewCell+Delegate.swift */,
+				E6F8295E27CF7CF100311209 /* TextTableViewCell+Delegate.swift */,
 			);
 			path = TextCell;
 			sourceTree = "<group>";
@@ -301,8 +307,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E66FF93927CE7183004067F9 /* TextTableViewCell+Delegate.swift in Sources */,
+				E66FF93927CE7183004067F9 /* DetailTableViewCell+Delegate.swift in Sources */,
 				E6F4E00E27C862D6007ED558 /* Constants.swift in Sources */,
+				E6F8295F27CF7CF100311209 /* TextTableViewCell+Delegate.swift in Sources */,
+				E6F8295D27CF633E00311209 /* EditMode.swift in Sources */,
 				E65281D727CDB119000E6EAC /* TextEditorPopupView.swift in Sources */,
 				E6EDFCA827CF1AF50090D105 /* UITapGestureRecognizer+Extension.swift in Sources */,
 				E65A677427C5E0E600130B3D /* AppDelegate.swift in Sources */,

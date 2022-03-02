@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ToggleButtonDelegate: AnyObject {
-    func toggleButtonDidTap(_ toggleButton: ToggleButton)
+    func toggleButtonDidChangeValue(_ toggleButton: ToggleButton)
 }
 
 final class ToggleButton: UIView {
@@ -49,6 +49,10 @@ final class ToggleButton: UIView {
         set { self.titleLabel.font = newValue }
     }
     
+    var isOn: Bool {
+        get { switchButton.isOn }
+        set { setOn(newValue, animated: false) }
+    }
     
     // MARK: - Initializers
     override init(frame: CGRect) {
@@ -78,7 +82,7 @@ final class ToggleButton: UIView {
     
     // MARK: - Button Actions
     @objc private func didTap() {
-        delegate?.toggleButtonDidTap(self)
+        delegate?.toggleButtonDidChangeValue(self)
     }
     
     func setOn(_ on: Bool, animated: Bool) {

@@ -82,8 +82,8 @@ class HomeViewController: UIViewController {
             preferredStyle: .alert
         )
         
-        let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
-        alert.addAction(okAction)
+        let closeAction = UIAlertAction(title: "Close", style: .default, handler: nil)
+        alert.addAction(closeAction)
         
         return alert
     }()
@@ -473,7 +473,15 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
         collectionView.deselectItem(at: indexPath, animated: true)
 
         if  let index = index(of: sortedTaskItems[indexPath.row]) {
+            
             let detailVC = DetailViewController(taskItem: taskItems![index])
+            detailVC.valueChangedDidSave = {
+                // Because taskItems is auto updating,
+                // so we don't have to call loadTaskItems() methods.
+                self.sortTaskItems()
+                self.taskCollectionView.reloadData()
+                self.updateBottomBar()
+            }
             
             navigationController?.pushViewController(detailVC, animated: true)
         }

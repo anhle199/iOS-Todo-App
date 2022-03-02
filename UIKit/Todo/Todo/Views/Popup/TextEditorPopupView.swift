@@ -10,7 +10,10 @@ import UIKit
 protocol TextEditorPopupViewDelegate: AnyObject {
     func textEditorPopupViewWillAppear(_ textEditorPopup: TextEditorPopupView)
     func textEditorPopupViewDidDisappear(_ textEditorPopup: TextEditorPopupView)
-    func textEditorPopupViewDidFinishEditing(_ textEditorPopup: TextEditorPopupView)
+    func textEditorPopupViewDidFinishEditing(
+        _ textEditorPopup: TextEditorPopupView,
+        valueChanged isChanged: Bool
+    )
 }
 
 class TextEditorPopupView: UIView {
@@ -21,11 +24,6 @@ class TextEditorPopupView: UIView {
         case cancel
         case edit
         case done
-    }
-
-    enum EditMode {
-        case active
-        case inactive
     }
     
     
@@ -227,15 +225,9 @@ class TextEditorPopupView: UIView {
         if barButtonType == .close {
             isHidden = true
         } else if barButtonType == .cancel {
-            // Disabled state of user typing to restore current text to the original text
-            self.textView.isEditable = false
-            
             self.text = originalText
             self.textView.text = originalText
             textView.endEditing(true)
-            
-            // Enabled state of user typing
-            self.textView.isEditable = true
         }
     }
     
@@ -245,14 +237,8 @@ class TextEditorPopupView: UIView {
         if barButtonType == .edit {
             self.editMode = .active
         } else if barButtonType == .done {
-            // Disabled state of user typing to store current text to the original text
-            self.textView.isEditable = false
-            
-            self.originalText = text
             textView.endEditing(true)
-            
-            // Enabled state of user typing
-            self.textView.isEditable = true
+            self.originalText = text
         }
     }
     
@@ -330,7 +316,7 @@ extension TextEditorPopupView: UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         self.editMode = .inactive
-        delegate?.textEditorPopupViewDidFinishEditing(self)
+        delegate?.textEditorPopupViewDidFinishEditing(self, valueChanged: text != originalText)
     }
     
 }

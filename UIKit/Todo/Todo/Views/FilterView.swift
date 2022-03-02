@@ -379,7 +379,7 @@ final class FilterView: UIView {
 
 // MARK: - Conforms the ToggleButtonDelegate protocol
 extension FilterView: ToggleButtonDelegate {
-    func toggleButtonDidTap(_ toggleButton: ToggleButton) {
+    func toggleButtonDidChangeValue(_ toggleButton: ToggleButton) {
         if tappedToggleButtonTags.remove(toggleButton.tag) == nil {
             // if the value of remove(_:) function is nil,
             // this toggle button is not tapped yet.

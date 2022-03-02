@@ -7,10 +7,14 @@
 
 import UIKit
 
-class PickerTableViewCell: UITableViewCell {
+class PickerTableViewCell: UITableViewCell, DetailTableViewCell {
 
     // MARK: - Reuse Identifier
     static let identifier = "PickerTableViewCell"
+    
+    
+    // MARK: - Delegation Pattern
+    weak var delegate: DetailTableViewCellDelegate?
     
     
     // MARK: - Initialize Subviews
@@ -29,6 +33,8 @@ class PickerTableViewCell: UITableViewCell {
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
         datePicker.setDate(.now, animated: false)
+//        datePicker.maximumDate
+//        datePicker.minimumDate
         
         return datePicker
     }()
@@ -50,6 +56,12 @@ class PickerTableViewCell: UITableViewCell {
         set { self.pickerView.preferredDatePickerStyle = newValue }
     }
     
+    var cellStyle: DetailCellStyle?
+    
+    
+    // MARK: - Computed Properties
+    var date: Date { pickerView.date }
+    
     
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -66,6 +78,13 @@ class PickerTableViewCell: UITableViewCell {
             pickerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             pickerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
         ])
+        
+        pickerView.addTarget(self, action: #selector(didChangeDate), for: .valueChanged)
+    }
+    
+    @objc private func didChangeDate() {
+        guard let type = cellStyle else { return }
+        delegate?.detailTableViewCellDidChangeValue(self, cellStype: type)
     }
     
     required init?(coder: NSCoder) {

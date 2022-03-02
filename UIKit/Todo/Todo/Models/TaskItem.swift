@@ -16,3 +16,21 @@ class TaskItem: Object {
     @Persisted var isDone: Bool = false
     @Persisted var createdAt: Date
 }
+
+struct TaskItemNonRealmObject {
+    var title: String
+    var taskDescription: String
+    var dueTime: Date
+    var isImportant: Bool
+    var isDone: Bool
+    var createdAt: Date
+    
+    init(from taskItem: TaskItem) {
+        self.title = taskItem.title
+        self.taskDescription = taskItem.taskDescription
+        self.dueTime = taskItem.dueTime
+        self.isImportant = taskItem.isImportant
+        self.isDone = taskItem.isDone
+        self.createdAt = taskItem.createdAt
+    }
+}

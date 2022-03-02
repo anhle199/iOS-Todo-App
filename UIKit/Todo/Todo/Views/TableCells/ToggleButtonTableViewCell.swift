@@ -7,10 +7,14 @@
 
 import UIKit
 
-class ToggleButtonTableViewCell: UITableViewCell {
+class ToggleButtonTableViewCell: UITableViewCell, DetailTableViewCell {
 
     // MARK: - Reuse Identifier
     static let identifier = "ToggleButtonTableViewCell"
+    
+    
+    // MARK: - Delegation Pattern
+    weak var delegate: DetailTableViewCellDelegate?
     
     
     // MARK: - Initialize Subviews
@@ -30,6 +34,12 @@ class ToggleButtonTableViewCell: UITableViewCell {
         set { self.toggleButton.title = newValue }
     }
     
+    var cellStyle: DetailCellStyle?
+    
+    
+    // MARK: - Computed Properties
+    var isOn: Bool { toggleButton.isOn }
+    
     
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -43,6 +53,8 @@ class ToggleButtonTableViewCell: UITableViewCell {
             toggleButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             toggleButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
         ])
+        
+        toggleButton.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -55,4 +67,13 @@ class ToggleButtonTableViewCell: UITableViewCell {
         toggleButton.setOn(on, animated: animated)
     }
     
+}
+
+
+// MARK: - Conforms the ToggleButtonDelegate protocol
+extension ToggleButtonTableViewCell: ToggleButtonDelegate {
+    func toggleButtonDidChangeValue(_ toggleButton: ToggleButton) {
+        guard let type = cellStyle else { return }
+        delegate?.detailTableViewCellDidChangeValue(self, cellStype: type)
+    }
 }

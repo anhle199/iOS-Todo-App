@@ -1,18 +1,20 @@
 //
-//  TextTableViewCell.swift
+//  TextTableViewCell+Delegate.swift
 //  Todo
 //
-//  Created by Le Hoang Anh on 01/03/2022.
+//  Created by Le Hoang Anh on 02/03/2022.
 //
 
 import Foundation
 
-protocol TextTableViewCell {
+protocol TextTableViewCell: DetailTableViewCell {
     var textValue: String { get set }
+    
+    func setText(_ text: String, andWantToCallDelegate isCall: Bool)
 }
 
-protocol TextTableViewCellDelegate: AnyObject {
-    func TextTableViewCellDidTap(
+protocol TextTableViewCellDelegate: DetailTableViewCellDelegate {
+    func textTableViewCellShouldDisplayTextEditorPopup(
         _ textTableView: TextTableViewCell,
         cellStype type: DetailCellStyle.TextType
     )

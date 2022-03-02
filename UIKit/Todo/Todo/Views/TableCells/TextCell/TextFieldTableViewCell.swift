@@ -50,6 +50,8 @@ class TextFieldTableViewCell: UITableViewCell, TextTableViewCell {
         set { self.textField.text = newValue }
     }
     
+    var cellStyle: DetailCellStyle?
+    
     
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -78,7 +80,17 @@ class TextFieldTableViewCell: UITableViewCell, TextTableViewCell {
     
     // MARK: - Gesture Action
     @objc private func didTap(_ gesture: UITapGestureRecognizer) {
-        delegate?.TextTableViewCellDidTap(self, cellStype: .textField)
+        delegate?.textTableViewCellShouldDisplayTextEditorPopup(self, cellStype: .textField)
+    }
+    
+    
+    // MARK: - Delegate Methods
+    func setText(_ text: String, andWantToCallDelegate isCall: Bool) {
+        self.textValue = text
+        
+        if isCall {
+            delegate?.detailTableViewCellDidChangeValue(self, cellStype: .text(.textField))
+        }
     }
     
 }

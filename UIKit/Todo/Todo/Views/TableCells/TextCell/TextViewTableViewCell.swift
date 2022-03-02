@@ -8,7 +8,7 @@
 import UIKit
 
 class TextViewTableViewCell: UITableViewCell, TextTableViewCell {
-
+    
     // MARK: - Reuse Identifier
     static let identifier = "TextViewTableViewCell"
     
@@ -37,6 +37,8 @@ class TextViewTableViewCell: UITableViewCell, TextTableViewCell {
         set { self.textView.text = newValue }
     }
     
+    var cellStyle: DetailCellStyle?
+    
     
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -62,7 +64,17 @@ class TextViewTableViewCell: UITableViewCell, TextTableViewCell {
     
     // MARK: - Gesture Action
     @objc private func didTap(_ gesture: UITapGestureRecognizer) {
-        delegate?.TextTableViewCellDidTap(self, cellStype: .textView)
+        delegate?.textTableViewCellShouldDisplayTextEditorPopup(self, cellStype: .textView)
+    }
+    
+    
+    // MARK: - Delegate Methods
+    func setText(_ text: String, andWantToCallDelegate isCall: Bool) {
+        self.textValue = text
+        
+        if isCall {
+            delegate?.detailTableViewCellDidChangeValue(self, cellStype: .text(.textView))
+        }
     }
     
 }
