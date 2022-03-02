@@ -16,10 +16,3 @@ class TaskItem: Object {
     @Persisted var isDone: Bool = false
     @Persisted var createdAt: Date
 }
-
-
-enum TaskState: Int, CaseIterable {
-    case uncomplete
-    case completed
-    case important
-}

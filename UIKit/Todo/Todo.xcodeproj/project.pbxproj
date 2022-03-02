@@ -10,17 +10,29 @@
 		E614FDA227C9F8B100CA09D9 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E614FDA127C9F8B100CA09D9 /* Date+Extension.swift */; };
 		E62EA9AE27C5ECF500411350 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62EA9AD27C5ECF500411350 /* HomeViewController.swift */; };
 		E62EA9B027C6244300411350 /* DateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62EA9AF27C6244300411350 /* DateButton.swift */; };
+		E650488B27CCBB860059F592 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E650488A27CCBB860059F592 /* DetailViewController.swift */; };
+		E650489127CCC2BA0059F592 /* ToggleButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E650489027CCC2BA0059F592 /* ToggleButtonTableViewCell.swift */; };
+		E650489527CCC4450059F592 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E650489427CCC4450059F592 /* TextFieldTableViewCell.swift */; };
+		E650489727CCCB7A0059F592 /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E650489627CCCB7A0059F592 /* PickerTableViewCell.swift */; };
+		E650489B27CCD1030059F592 /* TextViewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E650489A27CCD1030059F592 /* TextViewTableViewCell.swift */; };
+		E65281D727CDB119000E6EAC /* TextEditorPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65281D627CDB119000E6EAC /* TextEditorPopupView.swift */; };
 		E65A677427C5E0E600130B3D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65A677327C5E0E600130B3D /* AppDelegate.swift */; };
 		E65A677D27C5E0E800130B3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E65A677C27C5E0E800130B3D /* Assets.xcassets */; };
 		E65A678027C5E0E800130B3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E65A677E27C5E0E800130B3D /* LaunchScreen.storyboard */; };
 		E65A678827C5E35700130B3D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65A678727C5E35600130B3D /* SceneDelegate.swift */; };
+		E65F367B27CD21A9009F4E50 /* TaskState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65F367A27CD21A9009F4E50 /* TaskState.swift */; };
+		E65F367D27CD21E0009F4E50 /* DetailCellStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65F367C27CD21E0009F4E50 /* DetailCellStyle.swift */; };
+		E65F368027CD254F009F4E50 /* DetailTableViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65F367F27CD254F009F4E50 /* DetailTableViewControllerViewModel.swift */; };
+		E66FF93927CE7183004067F9 /* TextTableViewCell+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66FF93827CE7183004067F9 /* TextTableViewCell+Delegate.swift */; };
+		E6A1B7E027CDDE2A003DAB35 /* UIView+ShadowAndBorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A1B7DF27CDDE2A003DAB35 /* UIView+ShadowAndBorder.swift */; };
 		E6B3EA4727CA909800B75EE6 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B3EA4627CA909700B75EE6 /* FilterView.swift */; };
-		E6B3EA4927CA90D600B75EE6 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B3EA4827CA90D600B75EE6 /* UIView+Extensions.swift */; };
+		E6B3EA4927CA90D600B75EE6 /* UIView+RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B3EA4827CA90D600B75EE6 /* UIView+RoundedCorners.swift */; };
 		E6B3EA4B27CA90F300B75EE6 /* ToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B3EA4A27CA90F300B75EE6 /* ToggleButton.swift */; };
 		E6CE0EEF27C7F190004944A4 /* TaskCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CE0EEE27C7F190004944A4 /* TaskCollectionViewCell.swift */; };
 		E6D52B8227C8AA0D00446EC1 /* TaskItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D52B8127C8AA0D00446EC1 /* TaskItem.swift */; };
 		E6DF4B1B27CC5E8C00E7E582 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E6DF4B1A27CC5E8C00E7E582 /* RealmSwift */; };
 		E6E1BD5C27C68F4800DA8286 /* BottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E1BD5B27C68F4800DA8286 /* BottomBarView.swift */; };
+		E6EDFCA827CF1AF50090D105 /* UITapGestureRecognizer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6EDFCA727CF1AF50090D105 /* UITapGestureRecognizer+Extension.swift */; };
 		E6F4E00E27C862D6007ED558 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F4E00D27C862D6007ED558 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
@@ -28,18 +40,30 @@
 		E614FDA127C9F8B100CA09D9 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		E62EA9AD27C5ECF500411350 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		E62EA9AF27C6244300411350 /* DateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateButton.swift; sourceTree = "<group>"; };
+		E650488A27CCBB860059F592 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		E650489027CCC2BA0059F592 /* ToggleButtonTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleButtonTableViewCell.swift; sourceTree = "<group>"; };
+		E650489427CCC4450059F592 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
+		E650489627CCCB7A0059F592 /* PickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
+		E650489A27CCD1030059F592 /* TextViewTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewTableViewCell.swift; sourceTree = "<group>"; };
+		E65281D627CDB119000E6EAC /* TextEditorPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorPopupView.swift; sourceTree = "<group>"; };
 		E65A677027C5E0E600130B3D /* Todo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E65A677327C5E0E600130B3D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E65A677C27C5E0E800130B3D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E65A677F27C5E0E800130B3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E65A678127C5E0E800130B3D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E65A678727C5E35600130B3D /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		E65F367A27CD21A9009F4E50 /* TaskState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskState.swift; sourceTree = "<group>"; };
+		E65F367C27CD21E0009F4E50 /* DetailCellStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCellStyle.swift; sourceTree = "<group>"; };
+		E65F367F27CD254F009F4E50 /* DetailTableViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTableViewControllerViewModel.swift; sourceTree = "<group>"; };
+		E66FF93827CE7183004067F9 /* TextTableViewCell+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextTableViewCell+Delegate.swift"; sourceTree = "<group>"; };
+		E6A1B7DF27CDDE2A003DAB35 /* UIView+ShadowAndBorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+ShadowAndBorder.swift"; sourceTree = "<group>"; };
 		E6B3EA4627CA909700B75EE6 /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
-		E6B3EA4827CA90D600B75EE6 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
+		E6B3EA4827CA90D600B75EE6 /* UIView+RoundedCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RoundedCorners.swift"; sourceTree = "<group>"; };
 		E6B3EA4A27CA90F300B75EE6 /* ToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleButton.swift; sourceTree = "<group>"; };
 		E6CE0EEE27C7F190004944A4 /* TaskCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCollectionViewCell.swift; sourceTree = "<group>"; };
 		E6D52B8127C8AA0D00446EC1 /* TaskItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskItem.swift; sourceTree = "<group>"; };
 		E6E1BD5B27C68F4800DA8286 /* BottomBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBarView.swift; sourceTree = "<group>"; };
+		E6EDFCA727CF1AF50090D105 /* UITapGestureRecognizer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITapGestureRecognizer+Extension.swift"; sourceTree = "<group>"; };
 		E6F4E00D27C862D6007ED558 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -59,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				E62EA9AD27C5ECF500411350 /* HomeViewController.swift */,
+				E650488A27CCBB860059F592 /* DetailViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -66,6 +91,7 @@
 		E62EA9A927C5EC8E00411350 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E65F367927CD219C009F4E50 /* Enums */,
 				E6D52B8127C8AA0D00446EC1 /* TaskItem.swift */,
 			);
 			path = Models;
@@ -74,12 +100,13 @@
 		E62EA9AB27C5ECA500411350 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E66FF93A27CE7EBE004067F9 /* Popup */,
+				E65281D527CDB0C5000E6EAC /* Buttons */,
+				E650488F27CCC29E0059F592 /* CollectionCell */,
+				E650488E27CCC28B0059F592 /* TableCells */,
 				E65A677E27C5E0E800130B3D /* LaunchScreen.storyboard */,
-				E62EA9AF27C6244300411350 /* DateButton.swift */,
 				E6E1BD5B27C68F4800DA8286 /* BottomBarView.swift */,
-				E6CE0EEE27C7F190004944A4 /* TaskCollectionViewCell.swift */,
 				E6B3EA4627CA909700B75EE6 /* FilterView.swift */,
-				E6B3EA4A27CA90F300B75EE6 /* ToggleButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -92,6 +119,33 @@
 				E65A677C27C5E0E800130B3D /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		E650488E27CCC28B0059F592 /* TableCells */ = {
+			isa = PBXGroup;
+			children = (
+				E6EDFCA627CF0E460090D105 /* TextCell */,
+				E650489027CCC2BA0059F592 /* ToggleButtonTableViewCell.swift */,
+				E650489627CCCB7A0059F592 /* PickerTableViewCell.swift */,
+			);
+			path = TableCells;
+			sourceTree = "<group>";
+		};
+		E650488F27CCC29E0059F592 /* CollectionCell */ = {
+			isa = PBXGroup;
+			children = (
+				E6CE0EEE27C7F190004944A4 /* TaskCollectionViewCell.swift */,
+			);
+			path = CollectionCell;
+			sourceTree = "<group>";
+		};
+		E65281D527CDB0C5000E6EAC /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				E62EA9AF27C6244300411350 /* DateButton.swift */,
+				E6B3EA4A27CA90F300B75EE6 /* ToggleButton.swift */,
+			);
+			path = Buttons;
 			sourceTree = "<group>";
 		};
 		E65A676727C5E0E600130B3D = {
@@ -115,6 +169,7 @@
 			children = (
 				E6F4E00C27C862AE007ED558 /* Utility */,
 				E62EA9AC27C5ECBA00411350 /* Resources */,
+				E65F367E27CD252F009F4E50 /* ViewModels */,
 				E62EA9A927C5EC8E00411350 /* Models */,
 				E62EA9AB27C5ECA500411350 /* Views */,
 				E62EA9A827C5EC8000411350 /* Controllers */,
@@ -123,12 +178,49 @@
 			path = Todo;
 			sourceTree = "<group>";
 		};
+		E65F367927CD219C009F4E50 /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				E65F367A27CD21A9009F4E50 /* TaskState.swift */,
+				E65F367C27CD21E0009F4E50 /* DetailCellStyle.swift */,
+			);
+			path = Enums;
+			sourceTree = "<group>";
+		};
+		E65F367E27CD252F009F4E50 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				E65F367F27CD254F009F4E50 /* DetailTableViewControllerViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E66FF93A27CE7EBE004067F9 /* Popup */ = {
+			isa = PBXGroup;
+			children = (
+				E65281D627CDB119000E6EAC /* TextEditorPopupView.swift */,
+			);
+			path = Popup;
+			sourceTree = "<group>";
+		};
+		E6EDFCA627CF0E460090D105 /* TextCell */ = {
+			isa = PBXGroup;
+			children = (
+				E650489427CCC4450059F592 /* TextFieldTableViewCell.swift */,
+				E650489A27CCD1030059F592 /* TextViewTableViewCell.swift */,
+				E66FF93827CE7183004067F9 /* TextTableViewCell+Delegate.swift */,
+			);
+			path = TextCell;
+			sourceTree = "<group>";
+		};
 		E6F4E00C27C862AE007ED558 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
 				E6F4E00D27C862D6007ED558 /* Constants.swift */,
 				E614FDA127C9F8B100CA09D9 /* Date+Extension.swift */,
-				E6B3EA4827CA90D600B75EE6 /* UIView+Extensions.swift */,
+				E6B3EA4827CA90D600B75EE6 /* UIView+RoundedCorners.swift */,
+				E6A1B7DF27CDDE2A003DAB35 /* UIView+ShadowAndBorder.swift */,
+				E6EDFCA727CF1AF50090D105 /* UITapGestureRecognizer+Extension.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -209,18 +301,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E66FF93927CE7183004067F9 /* TextTableViewCell+Delegate.swift in Sources */,
 				E6F4E00E27C862D6007ED558 /* Constants.swift in Sources */,
+				E65281D727CDB119000E6EAC /* TextEditorPopupView.swift in Sources */,
+				E6EDFCA827CF1AF50090D105 /* UITapGestureRecognizer+Extension.swift in Sources */,
 				E65A677427C5E0E600130B3D /* AppDelegate.swift in Sources */,
-				E6B3EA4927CA90D600B75EE6 /* UIView+Extensions.swift in Sources */,
+				E650489527CCC4450059F592 /* TextFieldTableViewCell.swift in Sources */,
+				E6A1B7E027CDDE2A003DAB35 /* UIView+ShadowAndBorder.swift in Sources */,
+				E6B3EA4927CA90D600B75EE6 /* UIView+RoundedCorners.swift in Sources */,
+				E650489727CCCB7A0059F592 /* PickerTableViewCell.swift in Sources */,
 				E614FDA227C9F8B100CA09D9 /* Date+Extension.swift in Sources */,
+				E650488B27CCBB860059F592 /* DetailViewController.swift in Sources */,
 				E65A678827C5E35700130B3D /* SceneDelegate.swift in Sources */,
 				E6D52B8227C8AA0D00446EC1 /* TaskItem.swift in Sources */,
+				E65F368027CD254F009F4E50 /* DetailTableViewControllerViewModel.swift in Sources */,
+				E650489127CCC2BA0059F592 /* ToggleButtonTableViewCell.swift in Sources */,
 				E62EA9AE27C5ECF500411350 /* HomeViewController.swift in Sources */,
+				E65F367D27CD21E0009F4E50 /* DetailCellStyle.swift in Sources */,
 				E6B3EA4B27CA90F300B75EE6 /* ToggleButton.swift in Sources */,
 				E6E1BD5C27C68F4800DA8286 /* BottomBarView.swift in Sources */,
 				E6CE0EEF27C7F190004944A4 /* TaskCollectionViewCell.swift in Sources */,
 				E6B3EA4727CA909800B75EE6 /* FilterView.swift in Sources */,
 				E62EA9B027C6244300411350 /* DateButton.swift in Sources */,
+				E65F367B27CD21A9009F4E50 /* TaskState.swift in Sources */,
+				E650489B27CCD1030059F592 /* TextViewTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

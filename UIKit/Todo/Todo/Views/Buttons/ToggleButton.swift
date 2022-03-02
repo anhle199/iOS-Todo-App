@@ -21,7 +21,10 @@ final class ToggleButton: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Toggle"
+        label.font = .systemFont(ofSize: 17)
         label.textAlignment = .left
+        label.numberOfLines = 1
         
         return label
     }()
@@ -35,13 +38,15 @@ final class ToggleButton: UIView {
     }()
     
     
-    // MARK: - Observed Property
-    var title: String? = nil {
-        didSet {
-            if let title = title {
-                titleLabel.text = title
-            }
-        }
+    // MARK: - Stored Property
+    var title: String {
+        get { titleLabel.text ?? "" }
+        set { self.titleLabel.text = newValue }
+    }
+    
+    var titleFont: UIFont {
+        get { titleLabel.font }
+        set { self.titleLabel.font = newValue }
     }
     
     
@@ -50,20 +55,13 @@ final class ToggleButton: UIView {
         super.init(frame: frame)
         
         backgroundColor = .systemBackground
-        layer.cornerRadius = 8
-        
-        layer.shadowColor = UIColor.systemGray.cgColor
-        layer.shadowOffset = .zero
-        layer.shadowOpacity = 0.8
-        layer.shadowRadius = 2
         
         addSubview(titleLabel)
         addSubview(switchButton)
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(equalTo: switchButton.leadingAnchor, constant: 8),
-            titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
+            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            titleLabel.trailingAnchor.constraint(equalTo: switchButton.leadingAnchor, constant: 16),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             
             switchButton.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -86,5 +84,5 @@ final class ToggleButton: UIView {
     func setOn(_ on: Bool, animated: Bool) {
         switchButton.setOn(on, animated: animated)
     }
-    
+
 }

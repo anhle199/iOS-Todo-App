@@ -10,8 +10,6 @@ import UIKit
 protocol FilterViewDelegate: AnyObject {
     func filterViewWillAppear(_ filterView: FilterView)
     func filterViewDidDisappear(_ filterView: FilterView)
-    
-    func filterViewDidTapClose(_ filterView: FilterView)
     func filterViewDidTapApply(_ filterView: FilterView, withSelectedStates states: [TaskState])
 }
 
@@ -22,19 +20,11 @@ final class FilterView: UIView {
     
     
     // MARK: - Initialize Subviews
-    private let dimmingView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-        view.isUserInteractionEnabled = true
-        
-        return view
-    }()
-    
     private let contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .systemGray6
+        view.makeRoundCorners(for: [.topLeft, .topRight], radius: 24)
         
         return view
     }()
@@ -43,6 +33,7 @@ final class FilterView: UIView {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .systemGray3
+        view.makeRoundCorners(for: [.topLeft, .topRight], radius: 24)
         
         return view
     }()
@@ -92,8 +83,16 @@ final class FilterView: UIView {
     
     private let uncompleteToggleButton: ToggleButton = {
         let toggleButton = ToggleButton()
+        toggleButton.translatesAutoresizingMaskIntoConstraints = false
         toggleButton.title = "Uncomplete"
         toggleButton.tag = TaskState.uncomplete.rawValue
+        toggleButton.makeRoundCorners(for: .all, radius: 8)
+        toggleButton.dropShadow(
+            withColor: .systemGray,
+            offset: .zero,
+            opacity: 0.8,
+            radius: 2
+        )
         
         return toggleButton
     }()
@@ -102,6 +101,13 @@ final class FilterView: UIView {
         let toggleButton = ToggleButton()
         toggleButton.title = "Completed"
         toggleButton.tag = TaskState.completed.rawValue
+        toggleButton.makeRoundCorners(for: .all, radius: 8)
+        toggleButton.dropShadow(
+            withColor: .systemGray,
+            offset: .zero,
+            opacity: 0.8,
+            radius: 2
+        )
         
         return toggleButton
     }()
@@ -110,6 +116,13 @@ final class FilterView: UIView {
         let toggleButton = ToggleButton()
         toggleButton.title = "Important"
         toggleButton.tag = TaskState.important.rawValue
+        toggleButton.makeRoundCorners(for: .all, radius: 8)
+        toggleButton.dropShadow(
+            withColor: .systemGray,
+            offset: .zero,
+            opacity: 0.8,
+            radius: 2
+        )
         
         return toggleButton
     }()
@@ -168,18 +181,9 @@ final class FilterView: UIView {
     }
     
     
-    // MARK: - Override Methods
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        contentView.roundCorners(for: [.topLeft, .topRight], radius: 24)
-    }
-    
-    
     // MARK: - Configuration Methods
     private func setUpSubviews() {
         // Add subviews
-        addSubview(dimmingView)
         addSubview(contentView)
         
         contentView.addSubview(titleBarView)
@@ -194,13 +198,16 @@ final class FilterView: UIView {
         toggleButtonsStackView.addArrangedSubview(completedToggleButton)
         toggleButtonsStackView.addArrangedSubview(importantToggleButton)
         
-        // Add action for buttons and view
-        dimmingView.addGestureRecognizer(
+        
+        // Add a tap gesture recognizer for dimming view
+        self.addGestureRecognizer(
             UITapGestureRecognizer(
                 target: self,
-                action: #selector(didTapClose)
+                action: #selector(didTapDimmingArea)
             )
         )
+        
+        // Add action for buttons
         closeButton.addTarget(self, action: #selector(didTapClose), for: .touchUpInside)
         applyButton.addTarget(self, action: #selector(didTapApply), for: .touchUpInside)
         
@@ -219,12 +226,6 @@ final class FilterView: UIView {
         let bottomSafeArea: CGFloat = 32
         
         NSLayoutConstraint.activate([
-            // Dim view
-            dimmingView.topAnchor.constraint(equalTo: topAnchor),
-            dimmingView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            dimmingView.bottomAnchor.constraint(equalTo: contentView.topAnchor),
-            dimmingView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            
             // Content view
             contentView.trailingAnchor.constraint(
                 equalTo: safeAreaLayoutGuide.trailingAnchor
@@ -330,6 +331,12 @@ final class FilterView: UIView {
     
     
     // MARK: - Button Actions
+    @objc private func didTapDimmingArea(_ gesture: UITapGestureRecognizer) {
+        if gesture.state == .ended && gesture.didTapOutside(of: contentView) {
+            didTapClose()
+        }
+    }
+    
     @objc private func didTapClose() {
         isHidden = true
         
@@ -352,8 +359,6 @@ final class FilterView: UIView {
             
             applyButton.isEnabled = !tappedToggleButtonTags.isEmpty
         }
-        
-        delegate?.filterViewDidTapClose(self)
     }
     
     @objc private func didTapApply() {
