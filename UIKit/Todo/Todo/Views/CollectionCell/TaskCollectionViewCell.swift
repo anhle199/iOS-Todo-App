@@ -198,6 +198,7 @@ class TaskCollectionViewCell: UICollectionViewCell {
         layer.cornerRadius = 20
         
         setUpSubviews()
+        setUpConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -207,19 +208,6 @@ class TaskCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Configuration Methods
     private func setUpSubviews() {
-        addAllSubviews()
-        setUpConstraints()
-
-        // Bring these buttons in front of its superview
-        // in order to can get user's interaction
-        starButton.superview?.bringSubviewToFront(starButton)
-        checkmarkButton.superview?.bringSubviewToFront(checkmarkButton)
-
-        starButton.addTarget(self, action: #selector(didTapStar), for: .touchUpInside)
-        checkmarkButton.addTarget(self, action: #selector(didTapCheckmark), for: .touchUpInside)
-    }
-    
-    private func addAllSubviews() {
         contentView.addSubview(taskInfoStackView)
         contentView.addSubview(dueTimeView)
         contentView.addSubview(statusButtonsStackView)
@@ -231,6 +219,15 @@ class TaskCollectionViewCell: UICollectionViewCell {
         
         statusButtonsStackView.addArrangedSubview(starButton)
         statusButtonsStackView.addArrangedSubview(checkmarkButton)
+
+        // Bring these buttons in front of its superview
+        // in order to can get user's interaction
+        starButton.superview?.bringSubviewToFront(starButton)
+        checkmarkButton.superview?.bringSubviewToFront(checkmarkButton)
+
+        // Add action for two icon toggle button
+        starButton.addTarget(self, action: #selector(didTapStar), for: .touchUpInside)
+        checkmarkButton.addTarget(self, action: #selector(didTapCheckmark), for: .touchUpInside)
     }
     
     private func setUpConstraints() {
