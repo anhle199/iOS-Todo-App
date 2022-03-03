@@ -304,7 +304,17 @@ class HomeViewController: UIViewController {
     }
     
     @objc private func didTapAddButton() {
-        print("HomeViewController - didTapAddButton()")
+        let createTaskVC = CreateTaskViewController()
+        createTaskVC.valueChangedDidSave = {
+            self.sortTaskItems()
+            self.taskCollectionView.reloadData()
+            self.updateBottomBar()
+        }
+        
+        self.present(
+            UINavigationController(rootViewController: createTaskVC),
+            animated: true
+        )
     }
     
     @objc private func didTapDateButton(_ sender: DateButton) {
@@ -552,20 +562,20 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
 
         if  let index = index(of: sortedTaskItems[indexPath.row]) {
             
-            let detailVC = DetailViewController(taskItem: taskItems![index])
+            let taskDetailVC = TaskDetailViewController(taskItem: taskItems![index])
             
             // Because taskItems is auto updating,
             // so we don't have to call loadTaskItems() methods.
-            detailVC.valueChangedDidSave = {
+            taskDetailVC.valueChangedDidSave = {
                 self.sortTaskItems()
                 self.taskCollectionView.reloadData()
                 self.updateBottomBar()
             }
-            detailVC.onDeletion = {
+            taskDetailVC.onDeletion = {
                 self.deleteTaskItem(at: indexPath)
             }
             
-            navigationController?.pushViewController(detailVC, animated: true)
+            navigationController?.pushViewController(taskDetailVC, animated: true)
         }
     }
     

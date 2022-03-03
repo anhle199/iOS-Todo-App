@@ -17,7 +17,7 @@ class TaskItem: Object {
     @Persisted var createdAt: Date
 }
 
-struct TaskItemNonRealmObject {
+struct TaskItemNonRealmObject: Equatable {
     var title: String
     var taskDescription: String
     var dueTime: Date
@@ -32,5 +32,14 @@ struct TaskItemNonRealmObject {
         self.isImportant = taskItem.isImportant
         self.isDone = taskItem.isDone
         self.createdAt = taskItem.createdAt
+    }
+    
+    init() {
+        self.title = ""
+        self.taskDescription = ""
+        self.dueTime = .getEndOfDate(from: .now)
+        self.isImportant = false
+        self.isDone = false
+        self.createdAt = .now
     }
 }

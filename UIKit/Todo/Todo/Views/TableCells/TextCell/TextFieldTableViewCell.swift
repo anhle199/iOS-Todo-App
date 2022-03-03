@@ -34,8 +34,17 @@ class TextFieldTableViewCell: UITableViewCell, TextTableViewCell {
         textField.textAlignment = .right
         textField.textColor = .secondaryLabel
         textField.font = Constants.SystemTableView.CellView.font
-        
+        textField.isEnabled = false
+
         return textField
+    }()
+    
+    private let pencilIcon: UIImageView = {
+        let imageView = UIImageView(image: .init(systemName: "pencil"))
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.tintColor = .label
+        
+        return imageView
     }()
     
     
@@ -47,7 +56,10 @@ class TextFieldTableViewCell: UITableViewCell, TextTableViewCell {
     
     var textValue: String {
         get { textField.text ?? ""}
-        set { self.textField.text = newValue }
+        set {
+            self.pencilIcon.isHidden = !newValue.isEmpty
+            self.textField.text = newValue
+        }
     }
     
     var cellStyle: DetailCellStyle?
@@ -59,18 +71,23 @@ class TextFieldTableViewCell: UITableViewCell, TextTableViewCell {
         
         contentView.addSubview(titleLabel)
         contentView.addSubview(textField)
+        contentView.addSubview(pencilIcon)
 
         NSLayoutConstraint.activate([
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleLabel.widthAnchor.constraint(equalToConstant: 88),
             
             textField.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 16),
             textField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             textField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            
+            pencilIcon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            pencilIcon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
         ])
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        textField.addGestureRecognizer(tapGesture)
+        contentView.addGestureRecognizer(tapGesture)
     }
     
     required init?(coder: NSCoder) {
@@ -83,7 +100,7 @@ class TextFieldTableViewCell: UITableViewCell, TextTableViewCell {
         delegate?.textTableViewCellShouldDisplayTextEditorPopup(self, cellStype: .textField)
     }
     
-    
+
     // MARK: - Delegate Methods
     func setText(_ text: String, andWantToCallDelegate isCall: Bool) {
         self.textValue = text

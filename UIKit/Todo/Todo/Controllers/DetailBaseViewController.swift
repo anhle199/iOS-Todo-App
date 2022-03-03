@@ -1,27 +1,26 @@
 //
-//  DetailViewController.swift
+//  DetailBaseViewController.swift
 //  Todo
 //
 //  Created by Le Hoang Anh on 28/02/2022.
 //
 
 import UIKit
-import RealmSwift
 
-class DetailViewController: UIViewController {
-
+class DetailBaseViewController:
+    UIViewController,
+    UITableViewDelegate,
+    UITableViewDataSource,
+    TextTableViewCellDelegate,
+    TextEditorPopupViewDelegate
+{
+    
     // MARK: - View Model
-    var viewModel: DetailViewControllerViewModel
-    
-    
-    // MARK: - Declaration of Navigation Bar Buttons
-    var cancelButton: UIBarButtonItem!
-    var saveButton: UIBarButtonItem!
-    var deleteButton: UIBarButtonItem!
+    var viewModel: DetailBaseViewModelProtocol
     
     
     // MARK: - Initialize Subviews
-    private var tableView: UITableView = {
+    let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.allowsSelection = false
@@ -29,7 +28,7 @@ class DetailViewController: UIViewController {
         return tableView
     }()
     
-    private var textEditorPopup: TextEditorPopupView = {
+    let textEditorPopup: TextEditorPopupView = {
         let popupView = TextEditorPopupView(text: "")
         popupView.translatesAutoresizingMaskIntoConstraints = false
         popupView.isHidden = true
@@ -37,7 +36,7 @@ class DetailViewController: UIViewController {
         return popupView
     }()
     
-    private let connectionAlertVC: UIAlertController = {
+    let connectionAlertVC: UIAlertController = {
         let alert = UIAlertController(
             title: "Connection",
             message: "Your connection is unstable or disconnected.",
@@ -53,16 +52,22 @@ class DetailViewController: UIViewController {
     
     // MARK: - Callback Functions
     var valueChangedDidSave: (() -> Void)?
-    var onDeletion: (() -> Void)?
     
     
     // MARK: - Stored Properties
     private var textCellEditingFromTextEditorPopup: TextTableViewCell?
+    var numberOfRowsInEachSection = [Int]()
+    var numberOfSections = 0
+    var dueTimeSection = 0
+    var titleForHeaderInSections = [String]()
+    var titleForFooterInSections = [String]()
+    var cellStyles = [[DetailCellStyle]]()
+    var heightForRowInSections = [CGFloat]()
     
     
-    // MARK: - Initializer
-    init(taskItem: TaskItem) {
-        self.viewModel = .init(from: taskItem)
+    // MARK: - Initializers
+    init() {
+        self.viewModel = DetailBaseViewModel()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -77,75 +82,12 @@ class DetailViewController: UIViewController {
         
         view.backgroundColor = .systemBackground
         
-        setUpNavigationBar()
         setUpTableView()
         setUpTextEditorPopup()
     }
     
     
-    // MARK: - Navigation Bar Button Actions
-    @objc private func didTapCancel() {
-        navigationItem.leftBarButtonItem = nil  //navigationController?.navigationBar.topItem?.backBarButtonItem
-        navigationItem.rightBarButtonItem = deleteButton
-        title = "Detail"
-        
-        viewModel.rollback()
-        tableView.reloadData()
-    }
-    
-    @objc private func didTapSave() {
-        navigationItem.leftBarButtonItem = nil  //navigationController?.navigationBar.topItem?.backBarButtonItem
-        navigationItem.rightBarButtonItem = deleteButton
-        title = "Detail"
-        
-        viewModel.commitChanges { success in
-            if !success {
-                DispatchQueue.main.async {
-                    self.present(self.connectionAlertVC, animated: true)
-                }
-            }
-        }
-        tableView.reloadData()
-        self.valueChangedDidSave?()
-    }
-    
-    @objc private func didTapDelete() {
-        if let onDeletion = onDeletion {
-            onDeletion()
-            self.navigationController?.popViewController(animated: true)
-        }
-    }
-
-    
     // MARK: - Configuration Subview Methods
-    private func setUpNavigationBar() {
-        let backButton = UIBarButtonItem()
-        backButton.title = "Back"
-        navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
-        
-        cancelButton = UIBarButtonItem(
-            title: "Cancel",
-            style: .plain,
-            target: self,
-            action: #selector(didTapCancel)
-        )
-        saveButton = UIBarButtonItem(
-            title: "Save",
-            style: .done,
-            target: self,
-            action: #selector(didTapSave)
-        )
-        deleteButton = UIBarButtonItem(
-            barButtonSystemItem: .trash,
-            target: self,
-            action: #selector(didTapDelete)
-        )
-        deleteButton.tintColor = .systemRed
-        
-        title = "Detail"
-        navigationItem.rightBarButtonItem = deleteButton
-    }
-    
     private func setUpTableView() {
         tableView.register(
             ToggleButtonTableViewCell.self,
@@ -179,7 +121,7 @@ class DetailViewController: UIViewController {
     private func setUpTextEditorPopup() {
         textEditorPopup.delegate = self
         view.addSubview(textEditorPopup)
-
+        
         NSLayoutConstraint.activate([
             textEditorPopup.topAnchor.constraint(equalTo: view.topAnchor),
             textEditorPopup.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -188,23 +130,19 @@ class DetailViewController: UIViewController {
         ])
     }
     
-}
 
-
-// MARK: - Conform both UITableViewDelegate and UITableViewDataSource protocols
-extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
-
+    // MARK: - Conform both UITableViewDelegate and UITableViewDataSource protocols
     func numberOfSections(in tableView: UITableView) -> Int {
-        return Constants.DetailTableView.numberOfSections
+        return numberOfSections
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Constants.DetailTableView.numberOfRowsInEachSection[section]
+        return numberOfRowsInEachSection[section]
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UITableViewCell
-        let cellStyle = Constants.DetailTableView.cellStyles[indexPath.section][indexPath.row]
+        let cellStyle = cellStyles[indexPath.section][indexPath.row]
         
         switch cellStyle {
         case .toggle(let type):
@@ -264,31 +202,23 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return Constants.DetailTableView.heightForRowInSections[indexPath.section]
+        return heightForRowInSections[indexPath.section]
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return Constants.DetailTableView.titleForHeaderInSections[section]
+        return titleForHeaderInSections[section]
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return Constants.DetailTableView.titleForFooterInSections[section]
+        return titleForFooterInSections[section]
     }
-    
-}
+ 
 
-
-// MARK: - Conform the TextTableViewCellDelegate protocol
-extension DetailViewController: TextTableViewCellDelegate {
-    
+    // MARK: - Conform the TextTableViewCellDelegate protocol
     func detailTableViewCellDidChangeValue(
         _ detailTableView: DetailTableViewCell,
         cellStype type: DetailCellStyle
     ) {
-        self.navigationItem.leftBarButtonItem = cancelButton
-        self.navigationItem.rightBarButtonItem = saveButton
-        self.title = "Detail (Edtiting)"
-        
         switch type {
         case .toggle(let toggleCellType):
             let cell = detailTableView as! ToggleButtonTableViewCell
@@ -318,16 +248,19 @@ extension DetailViewController: TextTableViewCellDelegate {
                     tableView.reloadRows(at: [indexPath], with: .none)
                 }
             }
-    
+            
         case .pickerView(let pickViewType):
             let cell = detailTableView as! PickerTableViewCell
             
             // Update date of view model
             viewModel.draftTaskItem.dueTime = cell.date
-
+            
             // TODO: - Currently, hard coded
-            let row = (pickViewType == .date) ? 0 : 1
-            tableView.reloadRows(at: [.init(row: row, section: 2)], with: .none)
+            let indexPath = IndexPath(
+                row: pickViewType == .date ? 0 : 1,
+                section: dueTimeSection
+            )
+            tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     
@@ -339,16 +272,12 @@ extension DetailViewController: TextTableViewCellDelegate {
         textEditorPopup.setText(textTableView.textValue)
         textEditorPopup.isEditable = true
         textEditorPopup.isHidden = false
-     
+        
         self.textCellEditingFromTextEditorPopup = textTableView
     }
     
-}
 
-
-// MARK: - Conform the TextEditorPopupViewDelegate protocol
-extension DetailViewController: TextEditorPopupViewDelegate {
-    
+    // MARK: - Conform the TextEditorPopupViewDelegate protocol
     func textEditorPopupViewDidFinishEditing(
         _ textEditorPopup: TextEditorPopupView,
         valueChanged isChanged: Bool
@@ -357,14 +286,12 @@ extension DetailViewController: TextEditorPopupViewDelegate {
     }
     
     func textEditorPopupViewWillAppear(_ textEditorPopup: TextEditorPopupView) {
-        self.deleteButton.isEnabled = false
         self.navigationController?.navigationBar.isUserInteractionEnabled = false
     }
     
     func textEditorPopupViewDidDisappear(_ textEditorPopup: TextEditorPopupView) {
-        self.deleteButton.isEnabled = true
         self.navigationController?.navigationBar.isUserInteractionEnabled = true
-
+        
         guard let cell = textCellEditingFromTextEditorPopup,
               viewModel.draftTaskItem.title != textEditorPopup.text
         else { return }
