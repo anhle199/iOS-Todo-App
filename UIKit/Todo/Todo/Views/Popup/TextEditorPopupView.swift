@@ -14,6 +14,10 @@ protocol TextEditorPopupViewDelegate: AnyObject {
         _ textEditorPopup: TextEditorPopupView,
         valueChanged isChanged: Bool
     )
+    func textEditorPopupDisplayWarningAlertWhenEditingIfClickingOnDimmingArea(
+        _ textEditorPopup: TextEditorPopupView,
+        warningAlertViewController alert: UIAlertController
+    )
 }
 
 class TextEditorPopupView: UIView {
@@ -96,6 +100,16 @@ class TextEditorPopupView: UIView {
         return textView
     }()
     
+    private let warningOnPreparingClosePopupAlertVC: UIAlertController = {
+        let alert = UIAlertController(
+            title: "Are you sure want to close this popup?",
+            message: "Your changes will be removed if you close this popup.",
+            preferredStyle: .alert
+        )
+        
+        return alert
+    }()
+    
     
     // MARK: - Observed Properties
     override var isHidden: Bool {
@@ -158,6 +172,7 @@ class TextEditorPopupView: UIView {
         set { self.navigationBarTitleLabel.text = newValue }
     }
     
+    private var isPresentedWarningAlert = false
     private var isPreventedChangeEditMode = false
     
     private var originalText: String
@@ -165,7 +180,13 @@ class TextEditorPopupView: UIView {
     /// Value of this variable is current text in the editor.
     /// If user click to the `Cancel` button, value of this variable will be changed
     /// to the original value before starting editing mode.
-    private(set) var text: String  // read-only in public
+    private(set) var text: String {
+        get { textView.text }
+        set {
+            self.originalText = newValue
+            self.textView.text = newValue
+        }
+    }
    
     
     // MARK: - Initializers
@@ -175,8 +196,6 @@ class TextEditorPopupView: UIView {
     
     init(text: String) {
         self.originalText = text
-        self.text = text
-        
         super.init(frame: .zero)
         
         backgroundColor = .black.withAlphaComponent(0.7)
@@ -215,7 +234,15 @@ class TextEditorPopupView: UIView {
     // MARK: - Button Actions
     @objc private func didTapDimmingArea(_ gesture: UITapGestureRecognizer) {
         if gesture.state == .ended && gesture.didTapOutside(of: contentView) {
-            isHidden = true
+            if editMode == .active {
+                self.isPresentedWarningAlert = true
+                delegate?.textEditorPopupDisplayWarningAlertWhenEditingIfClickingOnDimmingArea(
+                    self,
+                    warningAlertViewController: warningOnPreparingClosePopupAlertVC
+                )
+            } else {
+                isHidden = true
+            }
         }
     }
     
@@ -225,10 +252,13 @@ class TextEditorPopupView: UIView {
         if barButtonType == .close {
             isHidden = true
         } else if barButtonType == .cancel {
-            self.text = originalText
-            self.textView.text = originalText
-            textView.endEditing(true)
+            onCancelAction()
         }
+    }
+    
+    private func onCancelAction() {
+        self.text = originalText
+        textView.endEditing(true)
     }
     
     @objc private func didTapRightBarButton(_ sender: UIButton) {
@@ -255,6 +285,21 @@ class TextEditorPopupView: UIView {
         navigationBarView.addSubview(rightBarButton)
         
         textView.delegate = self
+        
+        // Add "Yes" action for warning alert vc
+        let noAction = UIAlertAction(title: "No", style: .cancel) { _ in
+            self.isPresentedWarningAlert = false
+            self.textView.becomeFirstResponder()
+            self.rightBarButton.isEnabled = self.isChangedText
+        }
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
+            self.isPresentedWarningAlert = false
+            self.onCancelAction()
+            self.isHidden = true
+        }
+        
+        warningOnPreparingClosePopupAlertVC.addAction(noAction)
+        warningOnPreparingClosePopupAlertVC.addAction(yesAction)
     }
     
     private func setUpConstraints() {
@@ -290,11 +335,10 @@ class TextEditorPopupView: UIView {
     func setText(_ text: String) {
         self.originalText = text
         self.text = text
-        textView.text = text
     }
     
     func setEditMode(_ editMode: EditMode) {
-        if !isPreventedChangeEditMode {
+        if !isPreventedChangeEditMode && !isPresentedWarningAlert {
             self.editMode = editMode
         }
     }
@@ -310,13 +354,24 @@ extension TextEditorPopupView: UITextViewDelegate {
     }
     
     func textViewDidChange(_ textView: UITextView) {
-        self.text = textView.text
-        rightBarButton.isEnabled = (text != originalText)
+        rightBarButton.isEnabled = isChangedText
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        self.editMode = .inactive
-        delegate?.textEditorPopupViewDidFinishEditing(self, valueChanged: text != originalText)
+        if !isPresentedWarningAlert {
+            self.editMode = .inactive
+            
+            delegate?.textEditorPopupViewDidFinishEditing(
+                self,
+                valueChanged: isChangedText
+            )
+        }
+    }
+    
+    
+    // MARK: - Supporting Methods
+    private var isChangedText: Bool {
+        return text != originalText
     }
     
 }
