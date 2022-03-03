@@ -56,6 +56,10 @@ class DetailViewController: UIViewController {
     var onDeletion: (() -> Void)?
     
     
+    // MARK: - Stored Properties
+    private var textCellEditingFromTextEditorPopup: TextTableViewCell?
+    
+    
     // MARK: - Initializer
     init(taskItem: TaskItem) {
         self.viewModel = .init(from: taskItem)
@@ -183,10 +187,6 @@ class DetailViewController: UIViewController {
             textEditorPopup.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         ])
     }
-    
-    
-    // MARK: - Testing
-    private var whichTextCellEditingFromPopup: TextTableViewCell?
     
 }
 
@@ -340,7 +340,7 @@ extension DetailViewController: TextTableViewCellDelegate {
         textEditorPopup.isEditable = true
         textEditorPopup.isHidden = false
      
-        self.whichTextCellEditingFromPopup = textTableView
+        self.textCellEditingFromTextEditorPopup = textTableView
     }
     
 }
@@ -357,18 +357,27 @@ extension DetailViewController: TextEditorPopupViewDelegate {
     }
     
     func textEditorPopupViewWillAppear(_ textEditorPopup: TextEditorPopupView) {
+        self.deleteButton.isEnabled = false
         self.navigationController?.navigationBar.isUserInteractionEnabled = false
     }
     
     func textEditorPopupViewDidDisappear(_ textEditorPopup: TextEditorPopupView) {
+        self.deleteButton.isEnabled = true
         self.navigationController?.navigationBar.isUserInteractionEnabled = true
 
-        guard let cell = whichTextCellEditingFromPopup,
+        guard let cell = textCellEditingFromTextEditorPopup,
               viewModel.draftTaskItem.title != textEditorPopup.text
         else { return }
         
         cell.setText(textEditorPopup.text, andWantToCallDelegate: true)
-        self.whichTextCellEditingFromPopup = nil
+        self.textCellEditingFromTextEditorPopup = nil
+    }
+    
+    func textEditorPopupDisplayWarningAlertWhenEditingIfClickingOnDimmingArea(
+        _ textEditorPopup: TextEditorPopupView,
+        warningAlertViewController alert: UIAlertController
+    ) {
+        self.present(alert, animated: true)
     }
     
 }
