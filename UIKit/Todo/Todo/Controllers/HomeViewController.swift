@@ -214,6 +214,15 @@ class HomeViewController: UIViewController {
         taskCollectionView.delegate = self
         taskCollectionView.dataSource = self
         
+        // Add long press gesture for each cell of task collection view
+        taskCollectionView.addGestureRecognizer(
+            UILongPressGestureRecognizer(
+                target: self,
+                action: #selector(didTapLongPressOnCollectionViewCell)
+            )
+        )
+        
+        
         view.addSubview(taskCollectionView)
         
         NSLayoutConstraint.activate([
@@ -310,6 +319,75 @@ class HomeViewController: UIViewController {
     
         loadTaskItems()
         updateBottomBar()
+    }
+    
+    @objc private func didTapLongPressOnCollectionViewCell(
+        _ gesture: UILongPressGestureRecognizer
+    ) {
+        guard gesture.state == .began else { return }
+        
+        // Get location and find indexPath of that
+        let location = gesture.location(in: taskCollectionView)
+        guard let indexPath = taskCollectionView.indexPathForItem(at: location)
+        else { return }
+        
+        let actionSheet = UIAlertController(
+            title: sortedTaskItems[indexPath.row].title,
+            message: "What do you want to perform with this task?",
+            preferredStyle: .actionSheet
+        )
+        
+        // Create actions
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let deleteAction = UIAlertAction(
+            title: "Delete",
+            style: .destructive,
+            handler: { _ in
+                self.deleteTaskItem(at: indexPath)
+            }
+        )
+        let viewDetailAction = UIAlertAction(
+            title: "View Detail",
+            style: .default,
+            handler: { _ in
+                self.collectionView(
+                    self.taskCollectionView,
+                    didSelectItemAt: indexPath
+                )
+            }
+        )
+        
+        // Add actions
+        actionSheet.addAction(viewDetailAction)
+        actionSheet.addAction(deleteAction)
+        actionSheet.addAction(cancelAction)
+        
+        // Display action sheet
+        self.present(actionSheet, animated: true)
+    }
+    
+    private func deleteTaskItem(at indexPath: IndexPath) {
+        guard let index = taskItems?.firstIndex(where: {
+            $0.createdAt == sortedTaskItems[indexPath.row].createdAt
+        }) else {
+            return
+        }
+        
+        do {
+            try realm.write {
+                realm.delete(taskItems![index])
+            }
+            
+            sortTaskItems()
+            taskCollectionView.reloadData()
+            updateBottomBar()
+        } catch {
+            DispatchQueue.main.async { [weak self] in
+                if let strongSelf = self {
+                    strongSelf.present(strongSelf.connectionAlertVC, animated: true)
+                }
+            }
+        }
     }
     
 }
@@ -475,12 +553,16 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
         if  let index = index(of: sortedTaskItems[indexPath.row]) {
             
             let detailVC = DetailViewController(taskItem: taskItems![index])
+            
+            // Because taskItems is auto updating,
+            // so we don't have to call loadTaskItems() methods.
             detailVC.valueChangedDidSave = {
-                // Because taskItems is auto updating,
-                // so we don't have to call loadTaskItems() methods.
                 self.sortTaskItems()
                 self.taskCollectionView.reloadData()
                 self.updateBottomBar()
+            }
+            detailVC.onDeletion = {
+                self.deleteTaskItem(at: indexPath)
             }
             
             navigationController?.pushViewController(detailVC, animated: true)

@@ -17,6 +17,7 @@ class DetailViewController: UIViewController {
     // MARK: - Declaration of Navigation Bar Buttons
     var cancelButton: UIBarButtonItem!
     var saveButton: UIBarButtonItem!
+    var deleteButton: UIBarButtonItem!
     
     
     // MARK: - Initialize Subviews
@@ -50,8 +51,9 @@ class DetailViewController: UIViewController {
     }()
     
     
-    // MARK: - Stored Properties
+    // MARK: - Callback Functions
     var valueChangedDidSave: (() -> Void)?
+    var onDeletion: (() -> Void)?
     
     
     // MARK: - Initializer
@@ -80,7 +82,7 @@ class DetailViewController: UIViewController {
     // MARK: - Navigation Bar Button Actions
     @objc private func didTapCancel() {
         navigationItem.leftBarButtonItem = nil  //navigationController?.navigationBar.topItem?.backBarButtonItem
-        navigationItem.rightBarButtonItem = nil
+        navigationItem.rightBarButtonItem = deleteButton
         title = "Detail"
         
         viewModel.rollback()
@@ -89,7 +91,7 @@ class DetailViewController: UIViewController {
     
     @objc private func didTapSave() {
         navigationItem.leftBarButtonItem = nil  //navigationController?.navigationBar.topItem?.backBarButtonItem
-        navigationItem.rightBarButtonItem = nil
+        navigationItem.rightBarButtonItem = deleteButton
         title = "Detail"
         
         viewModel.commitChanges { success in
@@ -101,6 +103,13 @@ class DetailViewController: UIViewController {
         }
         tableView.reloadData()
         self.valueChangedDidSave?()
+    }
+    
+    @objc private func didTapDelete() {
+        if let onDeletion = onDeletion {
+            onDeletion()
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
     
@@ -122,8 +131,15 @@ class DetailViewController: UIViewController {
             target: self,
             action: #selector(didTapSave)
         )
+        deleteButton = UIBarButtonItem(
+            barButtonSystemItem: .trash,
+            target: self,
+            action: #selector(didTapDelete)
+        )
+        deleteButton.tintColor = .systemRed
         
         title = "Detail"
+        navigationItem.rightBarButtonItem = deleteButton
     }
     
     private func setUpTableView() {
