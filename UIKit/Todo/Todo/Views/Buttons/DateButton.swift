@@ -88,7 +88,7 @@ final class DateButton: UIButton {
            let weekday = todayDateComponents.weekday {
             
             dayNumberValue = dayNumber
-            weekdaySymbolValue = Calendar.current.shortWeekdaySymbols[weekday]  // - 1]
+            weekdaySymbolValue = Calendar.current.shortWeekdaySymbols[weekday - 1]  // - 1]
         }
     }
     

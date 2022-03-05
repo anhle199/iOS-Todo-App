@@ -9,6 +9,10 @@ import UIKit
 
 class TaskDetailViewController: DetailBaseViewController {
     
+    // MARK: - Stored Properties
+    var isHiddenNavigationBarAfterDimiss: Bool = false
+    
+    
     // MARK: - Declaration of Navigation Bar Buttons
     var cancelButton: UIBarButtonItem!
     var saveButton: UIBarButtonItem!
@@ -66,6 +70,12 @@ class TaskDetailViewController: DetailBaseViewController {
         super.viewDidLoad()
         
         setUpNavigationBar()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        navigationController?.isNavigationBarHidden = isHiddenNavigationBarAfterDimiss
     }
     
     

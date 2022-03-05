@@ -11,6 +11,19 @@ import RealmSwift
 class HomeViewController: UIViewController {
 
     // MARK: - Initialize Subviews
+    private let searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.searchBarStyle = .minimal
+        searchBar.autocapitalizationType = .none
+        searchBar.placeholder = "Type task name here..."
+        searchBar.autocorrectionType = .no
+        searchBar.isHidden = true
+        searchBar.showsCancelButton = true
+
+        return searchBar
+    }()
+
     private let dateButtonsHorizontalView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -96,6 +109,9 @@ class HomeViewController: UIViewController {
     
     private var selectingDateButtonIndex: Int?
 
+    private var dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsHidden: NSLayoutConstraint!
+    private var dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsShown: NSLayoutConstraint!
+    
     
     // MARK: - View Controller's Life Cycle
     override func viewDidLoad() {
@@ -104,6 +120,7 @@ class HomeViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         setUpNavigationBar()
+        setUpSearchBar()
         setUpDateButtonsView()
         setUpBottomBar()
         setUpTaskListView()
@@ -142,6 +159,18 @@ class HomeViewController: UIViewController {
                 action: #selector(didTapAddButton)
             )
         ]
+    }
+    
+    private func setUpSearchBar() {
+        searchBar.delegate = self
+        
+        view.addSubview(searchBar)
+
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+        ])
     }
     
     private func setUpDateButtonsView() {
@@ -188,11 +217,18 @@ class HomeViewController: UIViewController {
         // Create constraints for stack view
         let padding: CGFloat = 8
         let safeArea = view.safeAreaLayoutGuide
+        
+        self.dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsHidden = dateButtonsHorizontalView.topAnchor.constraint(
+            equalTo: safeArea.topAnchor,
+            constant: padding
+        )
+        self.dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsShown = dateButtonsHorizontalView.topAnchor.constraint(
+            equalTo: searchBar.bottomAnchor,
+            constant: padding
+        )
+        
         constraints.append(contentsOf: [
-            dateButtonsHorizontalView.topAnchor.constraint(
-                equalTo: safeArea.topAnchor,
-                constant: padding
-            ),
+            dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsHidden,
             dateButtonsHorizontalView.trailingAnchor.constraint(
                 equalTo: safeArea.trailingAnchor,
                 constant: -padding
@@ -300,15 +336,29 @@ class HomeViewController: UIViewController {
     }
     
     @objc private func didTapSearchButton() {
-        print("HomeViewController - didTapSearchButton()")
+        navigationController?.isNavigationBarHidden = true
+        searchBar.isHidden = false
+        updateConstraints(forHidingSearchBar: false)
+        
+        searchBar.searchTextField.becomeFirstResponder()
+    }
+    
+    private func updateConstraints(forHidingSearchBar isHidden: Bool) {
+        if isHidden {
+            dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsShown.isActive = false
+            dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsHidden.isActive = true
+        } else {
+            dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsHidden.isActive = false
+            dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsShown.isActive = true
+        }
+        
+        dateButtonsHorizontalView.layoutIfNeeded()
     }
     
     @objc private func didTapAddButton() {
         let createTaskVC = CreateTaskViewController()
         createTaskVC.valueChangedDidSave = {
-            self.sortTaskItems()
-            self.taskCollectionView.reloadData()
-            self.updateBottomBar()
+            self.reloadData()
         }
         
         self.present(
@@ -327,8 +377,7 @@ class HomeViewController: UIViewController {
         self.selectingDateButtonIndex = sender.tag
         sender.updateUI(for: .selecting)
     
-        loadTaskItems()
-        updateBottomBar()
+        reloadData()
     }
     
     @objc private func didTapLongPressOnCollectionViewCell(
@@ -388,9 +437,7 @@ class HomeViewController: UIViewController {
                 realm.delete(taskItems![index])
             }
             
-            sortTaskItems()
-            taskCollectionView.reloadData()
-            updateBottomBar()
+            reloadData()
         } catch {
             DispatchQueue.main.async { [weak self] in
                 if let strongSelf = self {
@@ -428,31 +475,87 @@ extension HomeViewController {
         sortTaskItems()
         taskCollectionView.reloadData()
     }
+
+    private func ascendingTaskItemComparator(_ lhs: TaskItem, _ rhs: TaskItem) -> Bool {
+        // difference of status of completion => uncomplete first
+        if lhs.isDone != rhs.isDone {
+            return !lhs.isDone
+        }
+        
+        // same due time => important first
+        if lhs.dueTime == rhs.dueTime {
+            if lhs.isImportant == rhs.isImportant {
+                return lhs.createdAt <= rhs.createdAt
+            }
+            
+            return lhs.isImportant
+        }
+        
+        // ascending due time
+        return lhs.dueTime < rhs.dueTime
+    }
     
     private func sortTaskItems() {
         guard let taskItems = taskItems else {
             return
         }
         
-        sortedTaskItems = taskItems.sorted { lhs, rhs in
-            // difference of status of completion => uncomplete first
-            if lhs.isDone != rhs.isDone {
-                return !lhs.isDone
-            }
-            
-            // same due time => important first
-            if lhs.dueTime == rhs.dueTime {
-                if lhs.isImportant == rhs.isImportant {
-                    return lhs.createdAt <= rhs.createdAt
-                }
-                
-                return lhs.isImportant
-            }
-            
-            // ascending due time
-            return lhs.dueTime < rhs.dueTime
+        sortedTaskItems = taskItems.sorted(by: ascendingTaskItemComparator)
+    }
+    
+    
+    private func filterOnCurrentTaskItems(
+        byTitle title: String,
+        andSortInAscendingOrder isSortInAscending: Bool = true
+    ) {
+        guard let taskItems = taskItems else { return }
+        
+        sortedTaskItems = taskItems.filter { item in
+            return item.title.localizedCaseInsensitiveContains(title)
+        }
+        
+        if isSortInAscending {
+            sortedTaskItems.sort(by: ascendingTaskItemComparator)
         }
     }
+    
+    func reloadData() {
+        if !searchBar.isHidden {
+            searchBar(searchBar, textDidChange: searchBar.text ?? "")
+        } else {
+            filterView.callApplyButtonAction()
+        }
+    }
+    
+}
+
+
+// MARK: - Conforms UISearchBarDelegate protocol
+extension HomeViewController: UISearchBarDelegate {
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        // Hide search bar and show navigation bar
+        navigationController?.isNavigationBarHidden = false
+        updateConstraints(forHidingSearchBar: true)
+        searchBar.isHidden = true
+        searchBar.searchTextField.text = ""
+
+        // Reload list of tasks and update bottom bar
+        filterView.callApplyButtonAction()
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        let taskTitle = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if !taskTitle.isEmpty {
+            filterOnCurrentTaskItems(byTitle: taskTitle)
+            taskCollectionView.reloadData()
+            updateBottomBar()
+        } else {
+            filterView.callApplyButtonAction()
+        }
+    }
+    
 }
 
 
@@ -528,7 +631,7 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return taskItems?.count ?? 0
+        return sortedTaskItems.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -567,13 +670,14 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
             // Because taskItems is auto updating,
             // so we don't have to call loadTaskItems() methods.
             taskDetailVC.valueChangedDidSave = {
-                self.sortTaskItems()
-                self.taskCollectionView.reloadData()
-                self.updateBottomBar()
+                self.reloadData()
             }
             taskDetailVC.onDeletion = {
                 self.deleteTaskItem(at: indexPath)
             }
+            
+            taskDetailVC.isHiddenNavigationBarAfterDimiss = !searchBar.isHidden
+            navigationController?.isNavigationBarHidden = false
             
             navigationController?.pushViewController(taskDetailVC, animated: true)
         }
@@ -591,7 +695,7 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
                 taskItems![taskItemIndex].isImportant.toggle()
             }
             
-            filterView.callApplyButtonAction()
+            reloadData()
         } catch {
             self.present(connectionAlertVC, animated: true)
         }
@@ -609,7 +713,7 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
                 taskItems![taskItemIndex].isDone.toggle()
             }
             
-            filterView.callApplyButtonAction()
+            reloadData()
         } catch {
             self.present(connectionAlertVC, animated: true)
         }
