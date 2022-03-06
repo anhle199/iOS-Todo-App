@@ -46,20 +46,22 @@ class BottomBarView: UIView {
     }()
     
     
-    // MARK: - Stored Properties
-    var taskCountValue: String {
-        get { taskCountLabel.text ?? "" }
-        set { self.taskCountLabel.text = newValue }
+    func setTaskCountValue(totalTasks: Int, completedTasks: Int) {
+        if totalTasks == 0 {
+            taskCountLabel.text = "No tasks"
+        } else {
+            taskCountLabel.text = "\(totalTasks) tasks / \(completedTasks) completed"
+        }
     }
     
     
     // MARK: - Observed Properties
-    var selectedDateValue: Date = .now {
+    var selectedDateValue: Date? = nil {
         didSet {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             
-            selectedDateLabel.text = formatter.string(for: selectedDateValue)
+            selectedDateLabel.text = formatter.string(for: selectedDateValue) ?? "Unknown"
         }
     }
     

@@ -58,7 +58,7 @@ class HomeViewController: UIViewController {
         return loadingView
     }()
     
-    private let taskCollectionView: UICollectionView = {
+    private let collectionView: UICollectionView = {
         let collectionView = UICollectionView(
             frame: .zero,
             collectionViewLayout: UICollectionViewCompositionalLayout(
@@ -110,13 +110,11 @@ class HomeViewController: UIViewController {
     }()
     
     
-    // MARK: - Stored Properties
-    private let realm = try? Realm()
-    private var taskItems: Results<TaskItem>?
-    private var sortedTaskItems = [TaskItem]()  // a sorted array of taskItems
+    // MARK: - View Model
+    private var viewModel = HomeViewModel()
     
-    private var selectingDateButtonIndex: Int?
-
+    
+    // MARK: - Stored Properties
     private var dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsHidden: NSLayoutConstraint!
     private var dateButtonsHorizontalViewTopAnchorConstraintsIfSearchBarIsShown: NSLayoutConstraint!
     
@@ -131,17 +129,18 @@ class HomeViewController: UIViewController {
         setUpSearchBar()
         setUpDateButtonsView()
         setUpBottomBar()
+        
         setUpLoadingView()
+        startLoadingAnimation()
+        
         setUpTaskListView()
         setUpFilterView()
         
-        loadingView.startAnimating()
-        
-        loadTaskItems()
+        viewModel.loadTaskItems()
+        collectionView.reloadData()
         updateBottomBar()
         
-        loadingView.endAnimating()
-        taskCollectionView.isHidden = false
+        endLoadingAnimation()
     }
     
     
@@ -199,7 +198,7 @@ class HomeViewController: UIViewController {
         for i in 0..<dateButtons.count {
             let dateComponent = Calendar.current.dateComponents(
                 in: .current,
-                from: HomeViewController.daysOfWeek[i]
+                from: DateManager.shared.daysOfWeek[i]
             )
             
             dateButtons[i].dayNumberValue = dateComponent.day ?? 1
@@ -221,10 +220,10 @@ class HomeViewController: UIViewController {
         }
         
         // Set colors for button (today)
-        if let index = HomeViewController.daysOfWeek.firstIndex(
+        if let index = DateManager.shared.daysOfWeek.firstIndex(
             where: { Calendar.current.isDateInToday($0) }
         ) {
-            self.selectingDateButtonIndex = index
+            viewModel.selectingDateButtonIndex = index
             dateButtons[index].setColors(for: .selecting, withAnimation: false)
         }
         
@@ -272,11 +271,11 @@ class HomeViewController: UIViewController {
     }
     
     private func setUpTaskListView() {
-        taskCollectionView.delegate = self
-        taskCollectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.dataSource = self
         
         // Add long press gesture for each cell of task collection view
-        taskCollectionView.addGestureRecognizer(
+        collectionView.addGestureRecognizer(
             UILongPressGestureRecognizer(
                 target: self,
                 action: #selector(didTapLongPressOnCollectionViewCell)
@@ -284,20 +283,20 @@ class HomeViewController: UIViewController {
         )
         
         
-        view.addSubview(taskCollectionView)
+        view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            taskCollectionView.topAnchor.constraint(
+            collectionView.topAnchor.constraint(
                 equalTo: dateButtonsHorizontalView.bottomAnchor,
                 constant: 8
             ),
-            taskCollectionView.trailingAnchor.constraint(
+            collectionView.trailingAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.trailingAnchor
             ),
-            taskCollectionView.bottomAnchor.constraint(
+            collectionView.bottomAnchor.constraint(
                 equalTo: bottomBarView.topAnchor
             ),
-            taskCollectionView.leadingAnchor.constraint(
+            collectionView.leadingAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.leadingAnchor
             ),
         ])
@@ -336,24 +335,33 @@ class HomeViewController: UIViewController {
     
     // MARK: - UI Modification Methods
     private func updateBottomBar() {
-        guard let selectingIndex = selectingDateButtonIndex,
-              taskItems != nil
-        else {
-            bottomBarView.selectedDateValue = .now
-            bottomBarView.taskCountValue = "No tasks"
-            return
-        }
-        
-        bottomBarView.selectedDateValue = HomeViewController.daysOfWeek[selectingIndex]
-        
-        if sortedTaskItems.isEmpty {
-            bottomBarView.taskCountValue = "No tasks"
-        } else {
-            let completedTaskCount = sortedTaskItems.filter({ $0.isDone }).count
-            bottomBarView.taskCountValue = "\(sortedTaskItems.count) tasks / \(completedTaskCount) completed"
-        }
+        let (totalTasks, completedTasks, selectedDate) = viewModel.getBottomBarDisplayedValue()
+        bottomBarView.selectedDateValue = selectedDate
+        bottomBarView.setTaskCountValue(totalTasks: totalTasks, completedTasks: completedTasks)
     }
 
+    func reloadData() {
+        startLoadingAnimation()
+        
+        if !searchBar.isHidden {
+            searchBar(searchBar, textDidChange: searchBar.text ?? "")
+        } else {
+            filterView.callApplyButtonAction()
+        }
+        
+        endLoadingAnimation()
+    }
+    
+    func startLoadingAnimation() {
+        collectionView.isHidden = true
+        loadingView.startAnimating()
+    }
+    
+    func endLoadingAnimation() {
+        loadingView.endAnimating()
+        collectionView.isHidden = false
+    }
+    
     
     // MARK: - Button Actions
     @objc private func didTapFilterButton() {
@@ -395,11 +403,11 @@ class HomeViewController: UIViewController {
     @objc private func didTapDateButton(_ sender: DateButton) {
         filterView.setDefaultFilterValues()
         
-        if let selectingDateButtonIndex = selectingDateButtonIndex {
-            dateButtons[selectingDateButtonIndex].updateUI(for: .unselected)
+        if let index = viewModel.selectingDateButtonIndex {
+            dateButtons[index].updateUI(for: .unselected)
         }
         
-        self.selectingDateButtonIndex = sender.tag
+        viewModel.selectingDateButtonIndex = sender.tag
         sender.updateUI(for: .selecting)
     
         reloadData()
@@ -411,12 +419,12 @@ class HomeViewController: UIViewController {
         guard gesture.state == .began else { return }
         
         // Get location and find indexPath of that
-        let location = gesture.location(in: taskCollectionView)
-        guard let indexPath = taskCollectionView.indexPathForItem(at: location)
+        let location = gesture.location(in: collectionView)
+        guard let indexPath = collectionView.indexPathForItem(at: location)
         else { return }
         
         let actionSheet = UIAlertController(
-            title: sortedTaskItems[indexPath.row].title,
+            title: viewModel.sortedTaskItems[indexPath.row].title,
             message: "What do you want to perform with this task?",
             preferredStyle: .actionSheet
         )
@@ -435,7 +443,7 @@ class HomeViewController: UIViewController {
             style: .default,
             handler: { _ in
                 self.collectionView(
-                    self.taskCollectionView,
+                    self.collectionView,
                     didSelectItemAt: indexPath
                 )
             }
@@ -451,113 +459,15 @@ class HomeViewController: UIViewController {
     }
     
     private func deleteTaskItem(at indexPath: IndexPath) {
-        guard let realm = realm,
-              let index = taskItems?.firstIndex(where: {
-                  $0.createdAt == sortedTaskItems[indexPath.row].createdAt
-              })
-        else {
-            return
-        }
-        
-        do {
-            try realm.write {
-                realm.delete(taskItems![index])
-            }
-            
+        if viewModel.removeTaskItem(at: indexPath.row) {
             reloadData()
-        } catch {
+        } else {
             DispatchQueue.main.async { [weak self] in
                 if let strongSelf = self {
                     strongSelf.present(strongSelf.connectionAlertVC, animated: true)
                 }
             }
         }
-    }
-    
-}
-
-
-// MARK: - Datebase Manipulation Methods
-extension HomeViewController {
-    func loadTaskItems(withPredicateFormat predicateFormat: String? = nil) {
-        let selectedDate: Date
-        if selectingDateButtonIndex != nil {
-            selectedDate = HomeViewController.daysOfWeek[selectingDateButtonIndex!]
-        } else {
-            selectedDate = .now
-        }
-        
-        let startOfSelectedDate = DateManager.shared.startTime(of: selectedDate)
-        let endOfSelectedDate = DateManager.shared.endTime(of: selectedDate)
-        
-        // Load and filter
-        taskItems = realm?.objects(TaskItem.self).where {
-            $0.dueTime >= startOfSelectedDate && $0.dueTime <= endOfSelectedDate
-        }
-        
-        if let predicateFormat = predicateFormat {
-            self.taskItems = taskItems?.filter(predicateFormat)
-        }
-        
-        sortTaskItems()
-        taskCollectionView.reloadData()
-    }
-
-    private func ascendingTaskItemComparator(_ lhs: TaskItem, _ rhs: TaskItem) -> Bool {
-        // difference of status of completion => uncomplete first
-        if lhs.isDone != rhs.isDone {
-            return !lhs.isDone
-        }
-        
-        // same due time => important first
-        if lhs.dueTime == rhs.dueTime {
-            if lhs.isImportant == rhs.isImportant {
-                return lhs.createdAt <= rhs.createdAt
-            }
-            
-            return lhs.isImportant
-        }
-        
-        // ascending due time
-        return lhs.dueTime < rhs.dueTime
-    }
-    
-    private func sortTaskItems() {
-        guard let taskItems = taskItems else {
-            return
-        }
-        
-        sortedTaskItems = taskItems.sorted(by: ascendingTaskItemComparator)
-    }
-    
-    
-    private func filterOnCurrentTaskItems(
-        byTitle title: String,
-        andSortInAscendingOrder isSortInAscending: Bool = true
-    ) {
-        guard let taskItems = taskItems else { return }
-        
-        sortedTaskItems = taskItems.filter { item in
-            return item.title.localizedCaseInsensitiveContains(title)
-        }
-        
-        if isSortInAscending {
-            sortedTaskItems.sort(by: ascendingTaskItemComparator)
-        }
-    }
-    
-    func reloadData() {
-        taskCollectionView.isHidden = true
-        loadingView.startAnimating()
-        
-        if !searchBar.isHidden {
-            searchBar(searchBar, textDidChange: searchBar.text ?? "")
-        } else {
-            filterView.callApplyButtonAction()
-        }
-        
-        loadingView.endAnimating()
-        taskCollectionView.isHidden = false
     }
     
 }
@@ -581,8 +491,8 @@ extension HomeViewController: UISearchBarDelegate {
         let taskTitle = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if !taskTitle.isEmpty {
-            filterOnCurrentTaskItems(byTitle: taskTitle)
-            taskCollectionView.reloadData()
+            viewModel.filterCurrentTaskItems(byTitle: taskTitle)
+            collectionView.reloadData()
             updateBottomBar()
         } else {
             filterView.callApplyButtonAction()
@@ -595,31 +505,11 @@ extension HomeViewController: UISearchBarDelegate {
 // MARK: - Configure Date Buttons
 extension HomeViewController {
     
-    private static let daysOfWeek = HomeViewController.getDaysOfWeek()
     private static var numberOfDateButtons: Int {
-        return HomeViewController.daysOfWeek.count
+        return DateManager.shared.daysOfWeek.count
     }
-    
     private static let dateButtonSize = CGSize(width: 40, height: 80)
     private static let dateButtonCornerRadius: CGFloat = 20
-    
-    private static func getDaysOfWeek() -> [Date] {
-        // Because default in Swift is starts from Sunday
-        // And the code below is process to start from Monday
-        let yesterday = Date.now.advanced(by: TimeInterval(-86400))
-        let calendar = Calendar.current
-        let dayOfWeek = calendar.component(.weekday, from: yesterday)
-        let weekdays = calendar.range(of: .weekday, in: .weekOfYear, for: yesterday)
-        let days = weekdays?.compactMap { weekday in
-            return calendar.date(
-                byAdding: .day,
-                value: weekday - dayOfWeek + 1,
-                to: yesterday
-            )
-        }
-        
-        return days ?? []
-    }
     
 }
 
@@ -666,21 +556,21 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return sortedTaskItems.count
+        return viewModel.countTasks
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let _ = taskItems,
-              let cell = collectionView.dequeueReusableCell(
+        guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: TaskCollectionViewCell.identifier,
                 for: indexPath
-              ) as? TaskCollectionViewCell
+              ) as? TaskCollectionViewCell,
+              viewModel.countTasks != 0
         else {
             return UICollectionViewCell()
         }
         
         cell.delegate = self
-        cell.setDataModel(sortedTaskItems[indexPath.row])
+        cell.setDataModel(viewModel.sortedTaskItems[indexPath.row])
         
         return cell
     }
@@ -688,19 +578,16 @@ extension HomeViewController: UICollectionViewDataSource {
 }
 
 
-// MARK: - Conform UICollectionViewDelegate and TaskCollectionViewCellDelegate protocol
+// MARK: - Conform UICollectionViewDelegate and collectionViewCellDelegate protocol
 extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDelegate {
-    
-    private func index(of taskItem: TaskItem) -> Int? {
-        return taskItems?.firstIndex(where: { $0.createdAt == taskItem.createdAt })
-    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        if  let index = index(of: sortedTaskItems[indexPath.row]) {
-            
-            let taskDetailVC = TaskDetailViewController(taskItem: taskItems![index])
+        if let taskItem = viewModel.getTaskItemInOriginalTasks(
+            viewModel.sortedTaskItems[indexPath.row]
+        ) {
+            let taskDetailVC = TaskDetailViewController(taskItem: taskItem)
             
             // Because taskItems is auto updating,
             // so we don't have to call loadTaskItems() methods.
@@ -719,39 +606,25 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
     }
     
     func taskCollectionViewCellDidToggleStar(_ cell: TaskCollectionViewCell) {
-        guard let realm = realm,
-              let indexPath = taskCollectionView.indexPath(for: cell),
-              let taskItemIndex = index(of: sortedTaskItems[indexPath.row])
-        else {
+        guard let indexPath = collectionView.indexPath(for: cell) else {
             return
         }
         
-        do {
-            try realm.write {
-                taskItems![taskItemIndex].isImportant.toggle()
-            }
-            
+        if viewModel.toggleStatusOfTaskItem(forStatus: .important, at: indexPath.row) {
             reloadData()
-        } catch {
+        } else {
             self.present(connectionAlertVC, animated: true)
         }
     }
     
     func taskCollectionViewCellDidToggleCheckmark(_ cell: TaskCollectionViewCell) {
-        guard let realm = realm,
-              let indexPath = taskCollectionView.indexPath(for: cell),
-              let taskItemIndex = index(of: sortedTaskItems[indexPath.row])
-        else {
+        guard let indexPath = collectionView.indexPath(for: cell) else {
             return
         }
         
-        do {
-            try realm.write {
-                taskItems![taskItemIndex].isDone.toggle()
-            }
-            
+        if viewModel.toggleStatusOfTaskItem(forStatus: .completetion, at: indexPath.row) {
             reloadData()
-        } catch {
+        } else {
             self.present(connectionAlertVC, animated: true)
         }
     }
@@ -773,50 +646,15 @@ extension HomeViewController: FilterViewDelegate {
     }
     
     func filterViewDidTapApply(_ filterView: FilterView, withSelectedStates states: [TaskState]) {
-        var copiedStates = states
-        
-        // If the 'states' array contains both .uncomplete and .completed, all tasks is satified.
-        if copiedStates.contains(.uncomplete) && copiedStates.contains(.completed) {
-            copiedStates.removeAll(where: { $0 == .uncomplete || $0 == .completed })
-        }
-        
-        var predicateFormat = ""
-        var values = [NSNumber]()
-        
-        if let index = copiedStates.firstIndex(of: .important) {
-            predicateFormat += "isImportant == %@ AND "
-            values.append(.init(booleanLiteral: true))
-            copiedStates.remove(at: index)
-        }
-        
-        if !copiedStates.isEmpty {
-            // copiedStates only contains .uncomplete or .completed
-            
-            let state = copiedStates.first
-            switch state {
-                case .uncomplete:
-                    predicateFormat += "isDone <> %@"
-                    values.append(.init(booleanLiteral: state == .uncomplete))
-                case .completed:
-                    predicateFormat += "isDone == %@"
-                    values.append(.init(booleanLiteral: state == .completed))
-                default:
-                    break
-                }
-        } else if !predicateFormat.isEmpty {
-            predicateFormat.removeLast(5)  // remove " AND "
-        }
-        
+        let (predicateFormat, values) = viewModel.createPrecidateFormat(forStates: states)
         if predicateFormat.isEmpty {
-            loadTaskItems()
+            viewModel.loadTaskItems()
         } else {
-            let predicate = NSPredicate(
-                format: predicateFormat,
-                argumentArray: values
-            )
-            loadTaskItems(withPredicateFormat: predicate.predicateFormat)
+            let predicate = NSPredicate(format: predicateFormat, argumentArray: values)
+            viewModel.loadTaskItems(withPredicateFormat: predicate.predicateFormat)
         }
         
+        collectionView.reloadData()
         updateBottomBar()
         bottomBarView.isHidden = false
     }
