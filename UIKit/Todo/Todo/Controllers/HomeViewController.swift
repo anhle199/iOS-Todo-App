@@ -51,6 +51,13 @@ class HomeViewController: UIViewController {
         return buttons
     }()
     
+    private let loadingView: LoadingView = {
+        let loadingView = LoadingView()
+        loadingView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return loadingView
+    }()
+    
     private let taskCollectionView: UICollectionView = {
         let collectionView = UICollectionView(
             frame: .zero,
@@ -63,6 +70,7 @@ class HomeViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.isHidden = true
         
         // Register collection view cell
         collectionView.register(
@@ -103,7 +111,7 @@ class HomeViewController: UIViewController {
     
     
     // MARK: - Stored Properties
-    private let realm = try! Realm()
+    private let realm = try? Realm()
     private var taskItems: Results<TaskItem>?
     private var sortedTaskItems = [TaskItem]()  // a sorted array of taskItems
     
@@ -123,11 +131,17 @@ class HomeViewController: UIViewController {
         setUpSearchBar()
         setUpDateButtonsView()
         setUpBottomBar()
+        setUpLoadingView()
         setUpTaskListView()
         setUpFilterView()
         
+        loadingView.startAnimating()
+        
         loadTaskItems()
         updateBottomBar()
+        
+        loadingView.endAnimating()
+        taskCollectionView.isHidden = false
     }
     
     
@@ -175,8 +189,8 @@ class HomeViewController: UIViewController {
     
     private func setUpDateButtonsView() {
         var constraints = [NSLayoutConstraint]()
-        let shortWeekdaySymbols = Calendar.current.shortWeekdaySymbols
-//        shortWeekdaySymbols.append(shortWeekdaySymbols.remove(at: 0))
+        var shortWeekdaySymbols = Calendar.current.shortWeekdaySymbols
+        shortWeekdaySymbols.append(shortWeekdaySymbols.remove(at: 0))
         
         // Add stack view of list of date buttons to view
         view.addSubview(dateButtonsHorizontalView)
@@ -244,6 +258,17 @@ class HomeViewController: UIViewController {
         
         // Active list of constraints
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    private func setUpLoadingView() {
+        view.addSubview(loadingView)
+        
+        NSLayoutConstraint.activate([
+            loadingView.topAnchor.constraint(equalTo: dateButtonsHorizontalView.topAnchor),
+            loadingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            loadingView.bottomAnchor.constraint(equalTo: bottomBarView.topAnchor),
+            loadingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        ])
     }
     
     private func setUpTaskListView() {
@@ -426,9 +451,11 @@ class HomeViewController: UIViewController {
     }
     
     private func deleteTaskItem(at indexPath: IndexPath) {
-        guard let index = taskItems?.firstIndex(where: {
-            $0.createdAt == sortedTaskItems[indexPath.row].createdAt
-        }) else {
+        guard let realm = realm,
+              let index = taskItems?.firstIndex(where: {
+                  $0.createdAt == sortedTaskItems[indexPath.row].createdAt
+              })
+        else {
             return
         }
         
@@ -460,11 +487,11 @@ extension HomeViewController {
             selectedDate = .now
         }
         
-        let startOfSelectedDate = Date.getStartOfDate(from: selectedDate)
-        let endOfSelectedDate = Date.getEndOfDate(from: selectedDate)
+        let startOfSelectedDate = DateManager.shared.startTime(of: selectedDate)
+        let endOfSelectedDate = DateManager.shared.endTime(of: selectedDate)
         
         // Load and filter
-        taskItems = realm.objects(TaskItem.self).where {
+        taskItems = realm?.objects(TaskItem.self).where {
             $0.dueTime >= startOfSelectedDate && $0.dueTime <= endOfSelectedDate
         }
         
@@ -520,11 +547,17 @@ extension HomeViewController {
     }
     
     func reloadData() {
+        taskCollectionView.isHidden = true
+        loadingView.startAnimating()
+        
         if !searchBar.isHidden {
             searchBar(searchBar, textDidChange: searchBar.text ?? "")
         } else {
             filterView.callApplyButtonAction()
         }
+        
+        loadingView.endAnimating()
+        taskCollectionView.isHidden = false
     }
     
 }
@@ -571,15 +604,17 @@ extension HomeViewController {
     private static let dateButtonCornerRadius: CGFloat = 20
     
     private static func getDaysOfWeek() -> [Date] {
-        let today = Date()
+        // Because default in Swift is starts from Sunday
+        // And the code below is process to start from Monday
+        let yesterday = Date.now.advanced(by: TimeInterval(-86400))
         let calendar = Calendar.current
-        let dayOfWeek = calendar.component(.weekday, from: today)
-        let weekdays = calendar.range(of: .weekday, in: .weekOfYear, for: today)
+        let dayOfWeek = calendar.component(.weekday, from: yesterday)
+        let weekdays = calendar.range(of: .weekday, in: .weekOfYear, for: yesterday)
         let days = weekdays?.compactMap { weekday in
             return calendar.date(
                 byAdding: .day,
-                value: weekday - dayOfWeek,  // + 1,  // starts from Monday
-                to: today
+                value: weekday - dayOfWeek + 1,
+                to: yesterday
             )
         }
         
@@ -684,7 +719,8 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
     }
     
     func taskCollectionViewCellDidToggleStar(_ cell: TaskCollectionViewCell) {
-        guard let indexPath = taskCollectionView.indexPath(for: cell),
+        guard let realm = realm,
+              let indexPath = taskCollectionView.indexPath(for: cell),
               let taskItemIndex = index(of: sortedTaskItems[indexPath.row])
         else {
             return
@@ -702,7 +738,8 @@ extension HomeViewController: UICollectionViewDelegate, TaskCollectionViewCellDe
     }
     
     func taskCollectionViewCellDidToggleCheckmark(_ cell: TaskCollectionViewCell) {
-        guard let indexPath = taskCollectionView.indexPath(for: cell),
+        guard let realm = realm,
+              let indexPath = taskCollectionView.indexPath(for: cell),
               let taskItemIndex = index(of: sortedTaskItems[indexPath.row])
         else {
             return
@@ -782,47 +819,6 @@ extension HomeViewController: FilterViewDelegate {
         
         updateBottomBar()
         bottomBarView.isHidden = false
-        
-//        var copiedStates = states
-//        var predicateFormat = ""
-//        var values = [NSNumber]()
-//
-//        if let index = copiedStates.firstIndex(of: .important) {
-//            predicateFormat += "isImportant == %@ AND "
-//            values.append(.init(booleanLiteral: true))
-//            copiedStates.remove(at: index)
-//        }
-//
-//        if !copiedStates.isEmpty {
-//            var subPredicateFormat = ""
-//
-//            for state in copiedStates {
-//                switch state {
-//                case .uncomplete:
-//                    subPredicateFormat += "isDone <> %@ OR "
-//                    values.append(.init(booleanLiteral: state == .uncomplete))
-//                case .completed:
-//                    subPredicateFormat += "isDone == %@ OR "
-//                    values.append(.init(booleanLiteral: state == .completed))
-//                default:
-//                    break
-//                }
-//            }
-//
-//            subPredicateFormat.removeLast(4)  // remove " OR "
-//            predicateFormat += "(\(subPredicateFormat))"
-//        } else if !predicateFormat.isEmpty {
-//            predicateFormat.removeLast(5)  // remove " AND "
-//        }
-//
-//        let predicate = NSPredicate(
-//            format: predicateFormat,
-//            argumentArray: values
-//        )
-//        loadTaskItems(withPredicateFormat: predicate.predicateFormat)
-//
-//        updateBottomBar()
-//        bottomBarView.isHidden = false
     }
     
 }

@@ -33,8 +33,12 @@ class PickerTableViewCell: UITableViewCell, DetailTableViewCell {
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
         datePicker.setDate(.now, animated: false)
-//        datePicker.maximumDate
-//        datePicker.minimumDate
+        
+        let dateManager = DateManager.shared
+        if let minDate = dateManager.daysOfWeek.first, let maxDate = dateManager.daysOfWeek.last {
+            datePicker.minimumDate = dateManager.startTime(of: minDate)
+            datePicker.maximumDate = dateManager.endTime(of: maxDate)
+        }
         
         return datePicker
     }()

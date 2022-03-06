@@ -37,7 +37,7 @@ struct TaskItemNonRealmObject: Equatable {
     init() {
         self.title = ""
         self.taskDescription = ""
-        self.dueTime = .getEndOfDate(from: .now)
+        self.dueTime = DateManager.shared.endTime(of: .now)
         self.isImportant = false
         self.isDone = false
         self.createdAt = .now
