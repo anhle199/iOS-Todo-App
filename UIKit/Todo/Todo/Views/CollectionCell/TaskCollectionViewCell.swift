@@ -140,7 +140,7 @@ class TaskCollectionViewCell: UICollectionViewCell {
         didSet { taskDescriptionLabel.text = taskDescriptionValue }
     }
     
-    var dueTimeValue: Date = .getEndOfDate(from: .now) {
+    var dueTimeValue: Date = DateManager.shared.endTime(of: .now) {
         didSet {
             let formatter = DateFormatter()
             formatter.timeStyle = .short

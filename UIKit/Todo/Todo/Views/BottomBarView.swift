@@ -10,11 +10,11 @@ import UIKit
 class BottomBarView: UIView {
 
     // MARK: - Initialize Subviews
-    private let taskCountView: UIView = {
+    private let contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-        view.clipsToBounds = true
+        view.backgroundColor = .label.withAlphaComponent(0.2)
+        view.makeRoundCorners(for: [.topLeft, .topRight], radius: 20)
         
         return view
     }()
@@ -28,17 +28,9 @@ class BottomBarView: UIView {
         label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.numberOfLines = 1
         label.adjustsFontSizeToFitWidth = true
+        label.clipsToBounds = true
         
         return label
-    }()
-    
-    private let selectedDateView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .clear
-        view.clipsToBounds = true
-        
-        return view
     }()
     
     private let selectedDateLabel: UILabel = {
@@ -48,6 +40,7 @@ class BottomBarView: UIView {
         label.textAlignment = .right
         label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.numberOfLines = 1
+        label.clipsToBounds = true
         
         return label
     }()
@@ -75,9 +68,6 @@ class BottomBarView: UIView {
     override init(frame: CGRect) {
         super.init(frame: .zero)
         
-        backgroundColor = .label.withAlphaComponent(0.2)
-        layer.cornerRadius = 16
-        
         addSubviews()
         setUpConstraints()
     }
@@ -89,37 +79,29 @@ class BottomBarView: UIView {
     
     // MARK: - Configuration Methods
     private func addSubviews() {
-        addSubview(taskCountView)
-        addSubview(selectedDateView)
-        taskCountView.addSubview(taskCountLabel)
-        selectedDateView.addSubview(selectedDateLabel)
+        addSubview(contentView)
+        contentView.addSubview(taskCountLabel)
+        contentView.addSubview(selectedDateLabel)
     }
     
     private func setUpConstraints() {
         let padding: CGFloat = 10
         let selectedDateViewWidth: CGFloat = 100
-        
+
         // Constraints
         NSLayoutConstraint.activate([
-            // Task count view
-            taskCountView.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            taskCountView.trailingAnchor.constraint(equalTo: selectedDateLabel.leadingAnchor, constant: -padding),
-            taskCountView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            taskCountView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
+            contentView.topAnchor.constraint(equalTo: topAnchor),
+            contentView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            contentView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
             
-            // Task count label
-            taskCountLabel.topAnchor.constraint(equalTo: taskCountView.topAnchor),
-            taskCountLabel.leadingAnchor.constraint(equalTo: taskCountView.leadingAnchor),
+            taskCountLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            taskCountLabel.trailingAnchor.constraint(equalTo: selectedDateLabel.leadingAnchor, constant: -padding),
+            taskCountLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
             
-            // Selected date view
-            selectedDateView.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            selectedDateView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
-            selectedDateView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            selectedDateView.widthAnchor.constraint(equalToConstant: selectedDateViewWidth),
-            
-            // Selected date label
-            selectedDateLabel.topAnchor.constraint(equalTo: selectedDateView.topAnchor),
-            selectedDateLabel.trailingAnchor.constraint(equalTo: selectedDateView.trailingAnchor),
+            selectedDateLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            selectedDateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            selectedDateLabel.widthAnchor.constraint(equalToConstant: selectedDateViewWidth),
         ])
     }
     
