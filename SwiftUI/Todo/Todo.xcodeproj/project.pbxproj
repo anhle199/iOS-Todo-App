@@ -7,18 +7,36 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E61D914F27D5B0B300AB8055 /* DateButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E61D914E27D5B0B300AB8055 /* DateButtonStyle.swift */; };
+		E6303CA527D59D3E0054DCBD /* DateButtonListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6303CA427D59D3E0054DCBD /* DateButtonListView.swift */; };
+		E6B7E84927D8737100882E49 /* TaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B7E84827D8737100882E49 /* TaskListView.swift */; };
+		E6B7E84B27D873DC00882E49 /* TaskItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B7E84A27D873DC00882E49 /* TaskItem.swift */; };
+		E6B7E84D27D87D8800882E49 /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B7E84C27D87D8800882E49 /* RoundedCorner.swift */; };
+		E6B7E85027D87E0500882E49 /* View+RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B7E84F27D87E0500882E49 /* View+RoundedCorner.swift */; };
+		E6B7E85227D8818500882E49 /* BottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B7E85127D8818500882E49 /* BottomBarView.swift */; };
 		E6CAB2CC27D519EB00FDDAEC /* TodoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CAB2CB27D519EB00FDDAEC /* TodoApp.swift */; };
 		E6CAB2CE27D519EB00FDDAEC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CAB2CD27D519EB00FDDAEC /* ContentView.swift */; };
 		E6CAB2D027D519ED00FDDAEC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E6CAB2CF27D519ED00FDDAEC /* Assets.xcassets */; };
 		E6CAB2D327D519ED00FDDAEC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E6CAB2D227D519ED00FDDAEC /* Preview Assets.xcassets */; };
+		E6CAB2E127D51B7D00FDDAEC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CAB2E027D51B7D00FDDAEC /* Constants.swift */; };
+		E6CAB2E427D51D0700FDDAEC /* DateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CAB2E327D51D0700FDDAEC /* DateManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E61D914E27D5B0B300AB8055 /* DateButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateButtonStyle.swift; sourceTree = "<group>"; };
+		E6303CA427D59D3E0054DCBD /* DateButtonListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateButtonListView.swift; sourceTree = "<group>"; };
+		E6B7E84827D8737100882E49 /* TaskListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListView.swift; sourceTree = "<group>"; };
+		E6B7E84A27D873DC00882E49 /* TaskItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskItem.swift; sourceTree = "<group>"; };
+		E6B7E84C27D87D8800882E49 /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
+		E6B7E84F27D87E0500882E49 /* View+RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RoundedCorner.swift"; sourceTree = "<group>"; };
+		E6B7E85127D8818500882E49 /* BottomBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBarView.swift; sourceTree = "<group>"; };
 		E6CAB2C827D519EB00FDDAEC /* Todo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6CAB2CB27D519EB00FDDAEC /* TodoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoApp.swift; sourceTree = "<group>"; };
 		E6CAB2CD27D519EB00FDDAEC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E6CAB2CF27D519ED00FDDAEC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E6CAB2D227D519ED00FDDAEC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E6CAB2E027D51B7D00FDDAEC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		E6CAB2E327D51D0700FDDAEC /* DateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +50,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E61D915027D5B1AB00AB8055 /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				E61D914E27D5B0B300AB8055 /* DateButtonStyle.swift */,
+			);
+			path = Buttons;
+			sourceTree = "<group>";
+		};
+		E6B7E84E27D87DF600882E49 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				E6B7E84F27D87E0500882E49 /* View+RoundedCorner.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		E6CAB2BF27D519EB00FDDAEC = {
 			isa = PBXGroup;
 			children = (
@@ -51,6 +85,13 @@
 		E6CAB2CA27D519EB00FDDAEC /* Todo */ = {
 			isa = PBXGroup;
 			children = (
+				E6B7E84E27D87DF600882E49 /* Extensions */,
+				E6CAB2E227D51BA900FDDAEC /* Enums */,
+				E6CAB2DD27D51B2B00FDDAEC /* Utils */,
+				E6CAB2DC27D51B2500FDDAEC /* Managers */,
+				E6CAB2DB27D51B1A00FDDAEC /* ViewModels */,
+				E6CAB2DA27D51B1200FDDAEC /* Views */,
+				E6CAB2D927D51B0D00FDDAEC /* Models */,
 				E6CAB2CB27D519EB00FDDAEC /* TodoApp.swift */,
 				E6CAB2CD27D519EB00FDDAEC /* ContentView.swift */,
 				E6CAB2CF27D519ED00FDDAEC /* Assets.xcassets */,
@@ -65,6 +106,56 @@
 				E6CAB2D227D519ED00FDDAEC /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E6CAB2D927D51B0D00FDDAEC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E6B7E84A27D873DC00882E49 /* TaskItem.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E6CAB2DA27D51B1200FDDAEC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E61D915027D5B1AB00AB8055 /* Buttons */,
+				E6303CA427D59D3E0054DCBD /* DateButtonListView.swift */,
+				E6B7E84827D8737100882E49 /* TaskListView.swift */,
+				E6B7E85127D8818500882E49 /* BottomBarView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E6CAB2DB27D51B1A00FDDAEC /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E6CAB2DC27D51B2500FDDAEC /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				E6CAB2E327D51D0700FDDAEC /* DateManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		E6CAB2DD27D51B2B00FDDAEC /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				E6CAB2E027D51B7D00FDDAEC /* Constants.swift */,
+				E6B7E84C27D87D8800882E49 /* RoundedCorner.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		E6CAB2E227D51BA900FDDAEC /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Enums;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,8 +228,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E6B7E84927D8737100882E49 /* TaskListView.swift in Sources */,
 				E6CAB2CE27D519EB00FDDAEC /* ContentView.swift in Sources */,
+				E6CAB2E427D51D0700FDDAEC /* DateManager.swift in Sources */,
+				E6B7E84D27D87D8800882E49 /* RoundedCorner.swift in Sources */,
+				E6B7E85227D8818500882E49 /* BottomBarView.swift in Sources */,
+				E6B7E84B27D873DC00882E49 /* TaskItem.swift in Sources */,
+				E6B7E85027D87E0500882E49 /* View+RoundedCorner.swift in Sources */,
+				E6303CA527D59D3E0054DCBD /* DateButtonListView.swift in Sources */,
+				E61D914F27D5B0B300AB8055 /* DateButtonStyle.swift in Sources */,
 				E6CAB2CC27D519EB00FDDAEC /* TodoApp.swift in Sources */,
+				E6CAB2E127D51B7D00FDDAEC /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
