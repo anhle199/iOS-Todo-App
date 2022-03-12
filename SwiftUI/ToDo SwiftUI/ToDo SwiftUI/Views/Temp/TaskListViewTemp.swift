@@ -45,8 +45,12 @@ struct TaskListViewTemp: View {
             }
             
             ScrollView {
-                ForEach(tasks) { task in
-                    TaskRowTemp(task: task)
+                ForEach(0..<tasks.count) { index in
+                    TaskRowTemp(task: tasks[index])
+                        .onTapGesture {
+                            self.selectedTaskIndex = index
+                            self.isClickedTaskRow = true
+                        }
                 }
                 .padding(.horizontal, 12)
             }

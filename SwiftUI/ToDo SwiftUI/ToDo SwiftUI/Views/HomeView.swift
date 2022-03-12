@@ -11,29 +11,49 @@ import RealmSwift
 struct HomeView: View {
 //    @ObservedResults(TaskItem.self) var tasks
     @EnvironmentObject var viewModel: HomeViewModel
+    
     @State private var showFilterView = false
+    @State private var initialStatuses: Set<TaskStatus> = [.uncomplete, .completed]
+    @State private var predicate: NSPredicate? = nil
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                DateButtonsView()
-                    .padding(.vertical, 8)
-                    .environmentObject(viewModel)
-                    .onAppear {
-                        viewModel.resetDateIndexToToday()
+            ZStack(alignment: .bottom) {
+                VStack(spacing: 0) {
+                    DateButtonsView()
+                        .padding(.vertical, 8)
+                        .environmentObject(viewModel)
+                        .onAppear {
+                            viewModel.resetDateIndexToToday()
+                        }
+                    
+    //                TaskListView()
+    //                    .environmentObject(viewModel)
+    //                    .padding(.bottom, 2)
+                    TaskListViewTemp()
+                        .padding(.bottom, 2)
+                    
+                    if !showFilterView {
+                        BottomBarView()
+                            .environmentObject(viewModel)
                     }
-                
-//                TaskListView()
-//                    .environmentObject(viewModel)
-//                    .padding(.bottom, 2)
-                TaskListViewTemp()
-                    .padding(.bottom, 2)
+                }
                 
                 if showFilterView {
-                    FilterView(isPresented: $showFilterView)
-                } else {
-                    BottomBarView()
-                        .environmentObject(viewModel)
+                    ZStack(alignment: .bottom) {
+                        Color.black
+                            .opacity(0.7)
+                            .ignoresSafeArea()
+                            .onTapGesture {
+                                self.showFilterView = false
+                            }
+                        
+                        FilterView(
+                            isPresented: $showFilterView,
+                            initialStatuses: $initialStatuses,
+                            predicate: $viewModel.predicate
+                        )
+                    }
                 }
             }
             .navigationTitle("Tasks")
@@ -41,10 +61,12 @@ struct HomeView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     leadingBarItem
+                        .disabled(showFilterView)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     trailingBarItems
+                        .disabled(showFilterView)
                 }
             }
             .edgesIgnoringSafeArea(.bottom)
@@ -55,6 +77,9 @@ struct HomeView: View {
 //                viewModel.filterAndSortTasks(from: tasks)
 //            }
 //            .onChange(of: tasks.count) { _ in
+//                viewModel.filterAndSortTasks(from: tasks)
+//            }
+//            .onChange(of: viewModel.predicate) { newValue in
 //                viewModel.filterAndSortTasks(from: tasks)
 //            }
         }

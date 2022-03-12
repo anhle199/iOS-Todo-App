@@ -36,8 +36,8 @@ struct TaskListView: View {
                             isValueChanged: $viewModel.isValueChanged
                         )
                         .onTapGesture {
-                            self.isClickedTaskRow = true
                             self.selectedTaskIndex = index
+                            self.isClickedTaskRow = true
                         }
                     }
                 }

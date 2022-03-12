@@ -24,9 +24,11 @@
 		E652199127DB934700DC2DA5 /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652199027DB934700DC2DA5 /* RoundedCorner.swift */; };
 		E652199427DB965200DC2DA5 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652199327DB965200DC2DA5 /* HomeViewModel.swift */; };
 		E652199627DB9D2300DC2DA5 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652199527DB9D2300DC2DA5 /* HomeView.swift */; };
+		E659131127DCABDB00E5FFFF /* FilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E659131027DCABDB00E5FFFF /* FilterViewModel.swift */; };
 		E678670F27DBB7A400B799D3 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678670E27DBB7A400B799D3 /* FilterView.swift */; };
 		E678671427DC44AC00B799D3 /* TaskListViewTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678671327DC44AC00B799D3 /* TaskListViewTemp.swift */; };
 		E678671727DC461C00B799D3 /* TaskRowTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678671627DC461C00B799D3 /* TaskRowTemp.swift */; };
+		E678671A27DC49B100B799D3 /* TaskStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678671927DC49B100B799D3 /* TaskStatus.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,9 +48,11 @@
 		E652199027DB934700DC2DA5 /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		E652199327DB965200DC2DA5 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		E652199527DB9D2300DC2DA5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		E659131027DCABDB00E5FFFF /* FilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewModel.swift; sourceTree = "<group>"; };
 		E678670E27DBB7A400B799D3 /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
 		E678671327DC44AC00B799D3 /* TaskListViewTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListViewTemp.swift; sourceTree = "<group>"; };
 		E678671627DC461C00B799D3 /* TaskRowTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRowTemp.swift; sourceTree = "<group>"; };
+		E678671927DC49B100B799D3 /* TaskStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskStatus.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +111,7 @@
 		E62A572827DAEAF4008258D3 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				E678671827DC49A800B799D3 /* Enums */,
 				E678671027DBB85500B799D3 /* Button Styles */,
 				E62A572B27DAEB28008258D3 /* Constants.swift */,
 				E652199027DB934700DC2DA5 /* RoundedCorner.swift */,
@@ -156,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				E652199327DB965200DC2DA5 /* HomeViewModel.swift */,
+				E659131027DCABDB00E5FFFF /* FilterViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -175,6 +181,14 @@
 				E678671327DC44AC00B799D3 /* TaskListViewTemp.swift */,
 			);
 			path = Temp;
+			sourceTree = "<group>";
+		};
+		E678671827DC49A800B799D3 /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				E678671927DC49B100B799D3 /* TaskStatus.swift */,
+			);
+			path = Enums;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -264,12 +278,14 @@
 				E652198B27DB919200DC2DA5 /* BottomBarView.swift in Sources */,
 				E62A574027DAF559008258D3 /* TaskRow.swift in Sources */,
 				E62A571B27DAEA0A008258D3 /* ToDo_SwiftUIApp.swift in Sources */,
+				E659131127DCABDB00E5FFFF /* FilterViewModel.swift in Sources */,
 				E652199427DB965200DC2DA5 /* HomeViewModel.swift in Sources */,
 				E62A572C27DAEB28008258D3 /* Constants.swift in Sources */,
 				E652198E27DB931F00DC2DA5 /* View+RoundedCorner.swift in Sources */,
 				E678671727DC461C00B799D3 /* TaskRowTemp.swift in Sources */,
 				E62A572F27DAEB81008258D3 /* DateButtonStyle.swift in Sources */,
 				E62A573927DAED9A008258D3 /* TaskItem.swift in Sources */,
+				E678671A27DC49B100B799D3 /* TaskStatus.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

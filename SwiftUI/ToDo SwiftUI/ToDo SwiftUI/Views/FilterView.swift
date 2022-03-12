@@ -9,9 +9,16 @@ import SwiftUI
 
 struct FilterView: View {
     @Binding var isPresented: Bool
-    @State private var showUncomplete = false
-    @State private var showCompleted = false
-    @State private var showImportant = false
+    @Binding var initialStatuses: Set<TaskStatus>
+    @Binding var predicate: NSPredicate?
+    
+    @ObservedObject private var viewModel = FilterViewModel()
+    
+    var isDisabledApplyButton: Bool {
+        viewModel.isDisabledApplyButton(
+            withInitialStatuses: initialStatuses
+        )
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -31,31 +38,43 @@ struct FilterView: View {
                 Spacer()
                 
                 Button {
-                    
+                    self.isPresented = false
+                    self.initialStatuses = viewModel.selectedStatuses
+                    self.predicate = viewModel.createPrecidateFormat()
                 } label: {
                     Text("Apply")
                         .font(.system(size: 17, weight: .semibold))
                 }
-                
+                .disabled(isDisabledApplyButton)
+                .foregroundColor(isDisabledApplyButton ? .gray : .blue)
             }
             .padding(.horizontal, 16)
             .frame(height: 40, alignment: .center)
-            .background(Color.gray.opacity(0.4))
+            .background(Color(uiColor: .systemGray4))
             .cornerRadius(24, corners: [.topLeft, .topRight])
             
             VStack(spacing: 16) {
                 Group {
-                    Toggle(isOn: $showUncomplete) {
-                        Text("Uncomplete")
-                    }
+                    Toggle("Uncomplete", isOn: $viewModel.showUncomplete)
+                        .onChange(of: viewModel.showUncomplete) { _ in
+                            viewModel.onValueChanged(with: .uncomplete)
+                            print("Initial: \(initialStatuses)")
+                            print("Selected: \(viewModel.selectedStatuses)")
+                        }
                     
-                    Toggle(isOn: $showCompleted) {
-                        Text("Completed")
-                    }
+                    Toggle("Completed", isOn: $viewModel.showCompleted)
+                        .onChange(of: viewModel.showCompleted) { _ in
+                            viewModel.onValueChanged(with: .completed)
+                            print("Initial: \(initialStatuses)")
+                            print("Selected: \(viewModel.selectedStatuses)")
+                        }
                     
-                    Toggle(isOn: $showImportant) {
-                        Text("Important")
-                    }
+                    Toggle("Important", isOn: $viewModel.showImportant)
+                        .onChange(of: viewModel.showImportant) { _ in
+                            viewModel.onValueChanged(with: .important)
+                            print("Initial: \(initialStatuses)")
+                            print("Selected: \(viewModel.selectedStatuses)")
+                        }
                 }
                 .makeFilterToggleStyle()
                
@@ -65,14 +84,22 @@ struct FilterView: View {
             }
             .padding(.top, 20)
             .padding(.bottom, 32)
-            .background(Color.black.opacity(0.05))
+            .background(Color(uiColor: .systemBackground))
+        }
+        .onAppear {
+            viewModel.resetFilterValues(withInitialValues: initialStatuses)
         }
     }
+    
 }
 
 struct FilterView_Previews: PreviewProvider {
     static var previews: some View {
-        FilterView(isPresented: .constant(false))
+        FilterView(
+            isPresented: .constant(false),
+            initialStatuses: .constant([]),
+            predicate: .constant(nil)
+        )
     }
 }
 

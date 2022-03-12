@@ -362,7 +362,7 @@ final class FilterView: UIView {
     }
     
     @objc private func didTapApply() {
-        applyButton.isEnabled = !tappedToggleButtonTags.isEmpty
+        applyButton.isEnabled = !tappedToggleButtonTags.isEmpty  // TODO: - Needs to preview!!!
         
         let selectedStates = tappedToggleButtonTags.compactMap({ TaskState(rawValue: $0) })
         delegate?.filterViewDidTapApply(self, withSelectedStates: selectedStates)
