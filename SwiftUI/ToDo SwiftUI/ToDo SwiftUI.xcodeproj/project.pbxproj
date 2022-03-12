@@ -24,6 +24,9 @@
 		E652199127DB934700DC2DA5 /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652199027DB934700DC2DA5 /* RoundedCorner.swift */; };
 		E652199427DB965200DC2DA5 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652199327DB965200DC2DA5 /* HomeViewModel.swift */; };
 		E652199627DB9D2300DC2DA5 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652199527DB9D2300DC2DA5 /* HomeView.swift */; };
+		E678670F27DBB7A400B799D3 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678670E27DBB7A400B799D3 /* FilterView.swift */; };
+		E678671427DC44AC00B799D3 /* TaskListViewTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678671327DC44AC00B799D3 /* TaskListViewTemp.swift */; };
+		E678671727DC461C00B799D3 /* TaskRowTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678671627DC461C00B799D3 /* TaskRowTemp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +46,9 @@
 		E652199027DB934700DC2DA5 /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		E652199327DB965200DC2DA5 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		E652199527DB9D2300DC2DA5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		E678670E27DBB7A400B799D3 /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
+		E678671327DC44AC00B799D3 /* TaskListViewTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListViewTemp.swift; sourceTree = "<group>"; };
+		E678671627DC461C00B799D3 /* TaskRowTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRowTemp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,7 +90,6 @@
 				E652199227DB962000DC2DA5 /* ViewModels */,
 				E62A573727DAED79008258D3 /* Models */,
 				E62A572D27DAEB70008258D3 /* Views */,
-				E62A572E27DAEB81008258D3 /* DateButtonStyle.swift */,
 				E62A571E27DAEA0D008258D3 /* Assets.xcassets */,
 				E62A572027DAEA0D008258D3 /* Preview Content */,
 			);
@@ -102,6 +107,7 @@
 		E62A572827DAEAF4008258D3 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				E678671027DBB85500B799D3 /* Button Styles */,
 				E62A572B27DAEB28008258D3 /* Constants.swift */,
 				E652199027DB934700DC2DA5 /* RoundedCorner.swift */,
 			);
@@ -111,11 +117,13 @@
 		E62A572D27DAEB70008258D3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E678671527DC460F00B799D3 /* Temp */,
 				E62A573227DAEBD8008258D3 /* DateButtonsView.swift */,
 				E62A573F27DAF559008258D3 /* TaskRow.swift */,
 				E62A574127DAF62E008258D3 /* TaskListView.swift */,
 				E652198A27DB919200DC2DA5 /* BottomBarView.swift */,
 				E652199527DB9D2300DC2DA5 /* HomeView.swift */,
+				E678670E27DBB7A400B799D3 /* FilterView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -150,6 +158,23 @@
 				E652199327DB965200DC2DA5 /* HomeViewModel.swift */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E678671027DBB85500B799D3 /* Button Styles */ = {
+			isa = PBXGroup;
+			children = (
+				E62A572E27DAEB81008258D3 /* DateButtonStyle.swift */,
+			);
+			path = "Button Styles";
+			sourceTree = "<group>";
+		};
+		E678671527DC460F00B799D3 /* Temp */ = {
+			isa = PBXGroup;
+			children = (
+				E678671627DC461C00B799D3 /* TaskRowTemp.swift */,
+				E678671327DC44AC00B799D3 /* TaskListViewTemp.swift */,
+			);
+			path = Temp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -229,7 +254,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E678670F27DBB7A400B799D3 /* FilterView.swift in Sources */,
 				E652199127DB934700DC2DA5 /* RoundedCorner.swift in Sources */,
+				E678671427DC44AC00B799D3 /* TaskListViewTemp.swift in Sources */,
 				E652199627DB9D2300DC2DA5 /* HomeView.swift in Sources */,
 				E62A573327DAEBD8008258D3 /* DateButtonsView.swift in Sources */,
 				E62A573627DAEBF8008258D3 /* DateManager.swift in Sources */,
@@ -240,6 +267,7 @@
 				E652199427DB965200DC2DA5 /* HomeViewModel.swift in Sources */,
 				E62A572C27DAEB28008258D3 /* Constants.swift in Sources */,
 				E652198E27DB931F00DC2DA5 /* View+RoundedCorner.swift in Sources */,
+				E678671727DC461C00B799D3 /* TaskRowTemp.swift in Sources */,
 				E62A572F27DAEB81008258D3 /* DateButtonStyle.swift in Sources */,
 				E62A573927DAED9A008258D3 /* TaskItem.swift in Sources */,
 			);

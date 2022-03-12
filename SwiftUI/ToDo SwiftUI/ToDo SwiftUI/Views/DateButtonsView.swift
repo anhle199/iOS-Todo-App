@@ -16,7 +16,9 @@ struct DateButtonsView: View {
             
             ForEach(0..<viewModel.countDates) { index in
                 Button {
-                    viewModel.selectedDateIndex = index
+                    withAnimation(.easeIn(duration: 0.1)) {
+                        viewModel.selectedDateIndex = index
+                    }
                 } label: {
                     VStack(spacing: 8) {
                         Text(getDayNumberAsString(for: index))

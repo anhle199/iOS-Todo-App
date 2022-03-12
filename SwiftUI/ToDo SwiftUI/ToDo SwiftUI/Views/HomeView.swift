@@ -9,8 +9,9 @@ import SwiftUI
 import RealmSwift
 
 struct HomeView: View {
-    @ObservedResults(TaskItem.self) var tasks
+//    @ObservedResults(TaskItem.self) var tasks
     @EnvironmentObject var viewModel: HomeViewModel
+    @State private var showFilterView = false
     
     var body: some View {
         NavigationView {
@@ -22,12 +23,18 @@ struct HomeView: View {
                         viewModel.resetDateIndexToToday()
                     }
                 
-                TaskListView()
-                    .environmentObject(viewModel)
+//                TaskListView()
+//                    .environmentObject(viewModel)
+//                    .padding(.bottom, 2)
+                TaskListViewTemp()
                     .padding(.bottom, 2)
                 
-                BottomBarView()
-                    .environmentObject(viewModel)
+                if showFilterView {
+                    FilterView(isPresented: $showFilterView)
+                } else {
+                    BottomBarView()
+                        .environmentObject(viewModel)
+                }
             }
             .navigationTitle("Tasks")
             .navigationBarTitleDisplayMode(.inline)
@@ -41,22 +48,22 @@ struct HomeView: View {
                 }
             }
             .edgesIgnoringSafeArea(.bottom)
-            .onChange(of: viewModel.selectedDateIndex) { _ in
-                viewModel.filterAndSortTasks(from: tasks)
-            }
-            .onChange(of: viewModel.isValueChanged) { _ in
-                viewModel.filterAndSortTasks(from: tasks)
-            }
-            .onChange(of: tasks.count) { _ in
-                viewModel.filterAndSortTasks(from: tasks)
-            }
+//            .onChange(of: viewModel.selectedDateIndex) { _ in
+//                viewModel.filterAndSortTasks(from: tasks)
+//            }
+//            .onChange(of: viewModel.isValueChanged) { _ in
+//                viewModel.filterAndSortTasks(from: tasks)
+//            }
+//            .onChange(of: tasks.count) { _ in
+//                viewModel.filterAndSortTasks(from: tasks)
+//            }
         }
         .navigationViewStyle(.stack)
     }
     
     var leadingBarItem: some View {
         Button {
-            
+            self.showFilterView = true
         } label: {
             Image(systemName: Constants.IconName.filter)
                 .foregroundColor(.black)
