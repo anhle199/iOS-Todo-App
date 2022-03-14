@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-fileprivate func generateTaskData() -> [TaskItem] {
+func generateTaskData() -> [TaskItem] {
     let formatter = DateFormatter()
     formatter.dateFormat = "dd/MM/yyyy HH:mm:ss"
 
@@ -17,7 +17,7 @@ fileprivate func generateTaskData() -> [TaskItem] {
         let task = TaskItem()
         task.title = "Task \(i + 1)"
         task.taskDescription = "This is the description of this task."
-        task.dueTime = formatter.date(from: "12/03/2022 19:09:00")!
+        task.dueTime = formatter.date(from: "15/03/2022 19:09:00")!
         task.isImportant = false
         task.isDone = false
         task.createdAt = .now
@@ -29,7 +29,7 @@ fileprivate func generateTaskData() -> [TaskItem] {
 
 
 struct TaskListViewTemp: View {
-    let tasks = generateTaskData()
+    @State private var tasks = generateTaskData()
     @State private var isClickedTaskRow = false
     @State private var selectedTaskIndex: Int? = nil
     
@@ -37,7 +37,7 @@ struct TaskListViewTemp: View {
         ZStack {
             NavigationLink("", isActive: $isClickedTaskRow) {
                 if let index = selectedTaskIndex {
-                    Text(tasks[index].title)
+                    TaskDetailViewTemp(task: $tasks[index])
                 } else {
                     Text("No tasks")
                 }

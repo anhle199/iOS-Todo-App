@@ -17,3 +17,30 @@ class TaskItem: Object, ObjectKeyIdentifiable {
     @Persisted var isDone: Bool = false
     @Persisted var createdAt: Date = .now
 }
+
+struct TaskItemNonRealmObject: Equatable {
+    var title: String
+    var taskDescription: String = ""
+    var dueTime: Date
+    var isImportant: Bool = false
+    var isDone: Bool = false
+    var createdAt: Date = .now
+    
+    init() {
+        self.title = ""
+        self.taskDescription = ""
+        self.dueTime = .now
+        self.isImportant = false
+        self.isDone = false
+        self.createdAt = .now
+    }
+    
+    init(from task: TaskItem) {
+        self.title = task.title
+        self.taskDescription = task.taskDescription
+        self.dueTime = task.dueTime
+        self.isImportant = task.isImportant
+        self.isDone = task.isDone
+        self.createdAt = task.createdAt
+    }
+}

@@ -19,9 +19,9 @@ struct TaskListView: View {
         ZStack {
             NavigationLink("", isActive: $isClickedTaskRow) {
                 if let index = selectedTaskIndex {
-                    Text(tasks[index].title)
+                    TaskDetailView(task: tasks[index])
                 } else {
-                    Text("No tasks")
+                    Text("No data")
                 }
                 
             }
