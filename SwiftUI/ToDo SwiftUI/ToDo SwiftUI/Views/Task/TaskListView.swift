@@ -65,6 +65,7 @@ struct TaskListView: View {
  
     func deleteTask(_ task: TaskItem) {
         self.$tasks.remove(task)
+        self.selectedTaskIndex = nil
     }
     
     @ViewBuilder
@@ -79,7 +80,6 @@ struct TaskListView: View {
     func DeleteButton() -> some View {
         Button("Delete", role: .destructive) {
             self.deleteTask(tasks[selectedTaskIndex!])
-            self.selectedTaskIndex = nil
             self.showConfirmationDialog = false
         }
     }

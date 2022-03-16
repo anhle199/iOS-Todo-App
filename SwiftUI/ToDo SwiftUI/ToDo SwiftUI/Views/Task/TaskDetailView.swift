@@ -115,7 +115,9 @@ struct TaskDetailView: View {
         .navigationBarBackButtonHidden(isEditing)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                CancelButton()
+                if isEditing {
+                    CancelButton()
+                }
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -137,13 +139,11 @@ struct TaskDetailView: View {
     
     @ViewBuilder
     func CancelButton() -> some View {
-        if isEditing {
-            Button("Cancel") {
-                self.rollback()
-                self.editMode = .inactive
-            }
-            .disabled(showTextEditorPopup)
+        Button("Cancel") {
+            self.rollback()
+            self.editMode = .inactive
         }
+        .disabled(showTextEditorPopup)
     }
     
     @ViewBuilder

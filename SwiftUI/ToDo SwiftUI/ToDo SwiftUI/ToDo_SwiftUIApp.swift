@@ -13,7 +13,6 @@ struct ToDo_SwiftUIApp: App {
         WindowGroup {
             HomeView()
                 .environmentObject(HomeViewModel())
-//            TextEditorPopup(isPresented: .constant(false), text: .constant("abc"))
         }
     }
 }

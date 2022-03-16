@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E625E89027E245FC00775A40 /* AddTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625E88F27E245FC00775A40 /* AddTaskView.swift */; };
 		E62A571B27DAEA0A008258D3 /* ToDo_SwiftUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A571A27DAEA0A008258D3 /* ToDo_SwiftUIApp.swift */; };
 		E62A571F27DAEA0D008258D3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E62A571E27DAEA0D008258D3 /* Assets.xcassets */; };
 		E62A572227DAEA0D008258D3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E62A572127DAEA0D008258D3 /* Preview Assets.xcassets */; };
@@ -35,6 +36,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E625E88F27E245FC00775A40 /* AddTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskView.swift; sourceTree = "<group>"; };
 		E62A571727DAEA0A008258D3 /* ToDo SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ToDo SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E62A571A27DAEA0A008258D3 /* ToDo_SwiftUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDo_SwiftUIApp.swift; sourceTree = "<group>"; };
 		E62A571E27DAEA0D008258D3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 				E62A573F27DAF559008258D3 /* TaskRow.swift */,
 				E62A574127DAF62E008258D3 /* TaskListView.swift */,
 				E6BB0F0A27DF3AA4002F9FFA /* TaskDetailView.swift */,
+				E625E88F27E245FC00775A40 /* AddTaskView.swift */,
 			);
 			path = Task;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 				E652198B27DB919200DC2DA5 /* BottomBarView.swift in Sources */,
 				E62A574027DAF559008258D3 /* TaskRow.swift in Sources */,
 				E62A571B27DAEA0A008258D3 /* ToDo_SwiftUIApp.swift in Sources */,
+				E625E89027E245FC00775A40 /* AddTaskView.swift in Sources */,
 				E659131127DCABDB00E5FFFF /* FilterViewModel.swift in Sources */,
 				E652199427DB965200DC2DA5 /* HomeViewModel.swift in Sources */,
 				E62A572C27DAEB28008258D3 /* Constants.swift in Sources */,

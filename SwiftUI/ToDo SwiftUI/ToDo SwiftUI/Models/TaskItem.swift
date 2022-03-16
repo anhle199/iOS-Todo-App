@@ -16,6 +16,16 @@ class TaskItem: Object, ObjectKeyIdentifiable {
     @Persisted var isImportant: Bool = false
     @Persisted var isDone: Bool = false
     @Persisted var createdAt: Date = .now
+    
+    convenience init(from taskNonRealmObject: TaskItemNonRealmObject) {
+        self.init()
+        self.title = taskNonRealmObject.title
+        self.taskDescription = taskNonRealmObject.taskDescription
+        self.dueTime = taskNonRealmObject.dueTime
+        self.isImportant = taskNonRealmObject.isImportant
+        self.isDone = taskNonRealmObject.isDone
+        self.createdAt = taskNonRealmObject.createdAt
+    }
 }
 
 struct TaskItemNonRealmObject: Equatable {

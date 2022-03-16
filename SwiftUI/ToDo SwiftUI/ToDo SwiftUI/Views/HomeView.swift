@@ -12,6 +12,7 @@ struct HomeView: View {
     @ObservedResults(TaskItem.self) var tasks
     @EnvironmentObject var viewModel: HomeViewModel
     
+    @State private var showAddTaskView = false
     @State private var showFilterView = false
     @State private var initialStatuses: Set<TaskStatus> = [.uncomplete, .completed]
     @State private var predicate: NSPredicate? = nil
@@ -82,6 +83,9 @@ struct HomeView: View {
             .onChange(of: viewModel.predicate) { newValue in
                 viewModel.filterAndSortTasks(from: tasks)
             }
+            .sheet(isPresented: $showAddTaskView) {
+                AddTaskView()
+            }
         }
         .navigationViewStyle(.stack)
     }
@@ -98,7 +102,7 @@ struct HomeView: View {
     var trailingBarItems: some View {
         HStack {
             Button {
-                
+                self.showAddTaskView = true
             } label: {
                 Image(systemName: Constants.IconName.add)
             }
