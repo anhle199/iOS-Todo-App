@@ -15,15 +15,20 @@ struct TaskListView: View {
     @State private var isClickedTaskRow = false
     @State private var selectedTaskIndex: Int? = nil
     
+    @State private var showConfirmationDialog = false
+    
     var body: some View {
         ZStack {
             NavigationLink("", isActive: $isClickedTaskRow) {
                 if let index = selectedTaskIndex {
-                    TaskDetailView(task: tasks[index])
+                    TaskDetailView(task: tasks[index], onDelete: deleteTask)
+                        .onChange(of: tasks[index]) { _ in
+                            self.viewModel.isValueChanged.toggle()
+                        }
+                        .onDisappear { self.selectedTaskIndex = nil }
                 } else {
                     Text("No data")
                 }
-                
             }
             
             ScrollView {
@@ -39,10 +44,43 @@ struct TaskListView: View {
                             self.selectedTaskIndex = index
                             self.isClickedTaskRow = true
                         }
+                        .onLongPressGesture {
+                            self.selectedTaskIndex = index
+                            self.showConfirmationDialog = true
+                        }
                     }
                 }
                 .padding(.horizontal, 12)
+                .confirmationDialog(
+                    "What do you want to perform with this task?",
+                    isPresented: $showConfirmationDialog,
+                    titleVisibility: .visible
+                ) {
+                    CancelButton()
+                    DeleteButton()
+                }
             }
+        }
+    }
+ 
+    func deleteTask(_ task: TaskItem) {
+        self.$tasks.remove(task)
+    }
+    
+    @ViewBuilder
+    func CancelButton() -> some View {
+        Button("Cancel", role: .cancel) {
+            self.selectedTaskIndex = nil
+            self.showConfirmationDialog = false
+        }
+    }
+    
+    @ViewBuilder
+    func DeleteButton() -> some View {
+        Button("Delete", role: .destructive) {
+            self.deleteTask(tasks[selectedTaskIndex!])
+            self.selectedTaskIndex = nil
+            self.showConfirmationDialog = false
         }
     }
     

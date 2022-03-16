@@ -9,7 +9,7 @@ import SwiftUI
 import RealmSwift
 
 struct HomeView: View {
-//    @ObservedResults(TaskItem.self) var tasks
+    @ObservedResults(TaskItem.self) var tasks
     @EnvironmentObject var viewModel: HomeViewModel
     
     @State private var showFilterView = false
@@ -27,11 +27,11 @@ struct HomeView: View {
                             viewModel.resetDateIndexToToday()
                         }
                     
-    //                TaskListView()
-    //                    .environmentObject(viewModel)
-    //                    .padding(.bottom, 2)
-                    TaskListViewTemp()
+                    TaskListView()
+                        .environmentObject(viewModel)
                         .padding(.bottom, 2)
+//                    TaskListViewTemp()
+//                        .padding(.bottom, 2)
                     
                     if !showFilterView {
                         BottomBarView()
@@ -70,18 +70,18 @@ struct HomeView: View {
                 }
             }
             .edgesIgnoringSafeArea(.bottom)
-//            .onChange(of: viewModel.selectedDateIndex) { _ in
-//                viewModel.filterAndSortTasks(from: tasks)
-//            }
-//            .onChange(of: viewModel.isValueChanged) { _ in
-//                viewModel.filterAndSortTasks(from: tasks)
-//            }
-//            .onChange(of: tasks.count) { _ in
-//                viewModel.filterAndSortTasks(from: tasks)
-//            }
-//            .onChange(of: viewModel.predicate) { newValue in
-//                viewModel.filterAndSortTasks(from: tasks)
-//            }
+            .onChange(of: viewModel.selectedDateIndex) { _ in
+                viewModel.filterAndSortTasks(from: tasks)
+            }
+            .onChange(of: viewModel.isValueChanged) { _ in
+                viewModel.filterAndSortTasks(from: tasks)
+            }
+            .onChange(of: tasks.count) { _ in
+                viewModel.filterAndSortTasks(from: tasks)
+            }
+            .onChange(of: viewModel.predicate) { newValue in
+                viewModel.filterAndSortTasks(from: tasks)
+            }
         }
         .navigationViewStyle(.stack)
     }
@@ -113,9 +113,9 @@ struct HomeView: View {
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView()
-            .environmentObject(HomeViewModel())
-    }
-}
+//struct HomeView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        HomeView()
+//            .environmentObject(HomeViewModel())
+//    }
+//}

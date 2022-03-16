@@ -16,6 +16,9 @@ struct TaskDetailView: View {
     @State private var text = ""
     @State private var textFieldEditing: EditableFieldInTextEditorPopup?
     
+    var onDelete: (TaskItem) -> Void
+    @Environment(\.dismiss) var dismiss
+    
     enum EditableFieldInTextEditorPopup {
         case title, description
     }
@@ -28,7 +31,7 @@ struct TaskDetailView: View {
                 } header: {
                     Text("Status")
                 }
-
+                
                 Section {
                     HStack {
                         Text("Task name")
@@ -53,7 +56,7 @@ struct TaskDetailView: View {
                         }
                     }
                 }
-
+                
                 Section {
                     DatePicker(
                         "Due time",
@@ -74,7 +77,6 @@ struct TaskDetailView: View {
                 Section {
                     TextEditor(text: $draftTask.taskDescription)
                         .disabled(true)
-                        
                 } header: {
                     HStack {
                         Text("Description")
@@ -113,27 +115,14 @@ struct TaskDetailView: View {
         .navigationBarBackButtonHidden(isEditing)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                if isEditing {
-                    Button("Cancel") {
-                        
-                    }
-                    .disabled(showTextEditorPopup)
-                }
+                CancelButton()
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isEditing {
-                    Button {
-                        
-                    } label: {
-                        Text("Done")
-                            .fontWeight(.semibold)
-                    }
-                    .disabled(showTextEditorPopup)
+                    DoneButton()
                 } else {
-                    Image(systemName: "trash")
-                        .foregroundColor(.red)
-                        .disabled(showTextEditorPopup)
+                    DeleteButton()
                 }
             }
         }
@@ -144,6 +133,41 @@ struct TaskDetailView: View {
         .onAppear {
             self.draftTask = .init(from: task)
         }
+    }
+    
+    @ViewBuilder
+    func CancelButton() -> some View {
+        if isEditing {
+            Button("Cancel") {
+                self.rollback()
+                self.editMode = .inactive
+            }
+            .disabled(showTextEditorPopup)
+        }
+    }
+    
+    @ViewBuilder
+    func DoneButton() -> some View {
+        Button {
+            self.commit()
+            self.editMode = .inactive
+        } label: {
+            Text("Done")
+                .fontWeight(.semibold)
+        }
+        .disabled(showTextEditorPopup)
+    }
+    
+    @ViewBuilder
+    func DeleteButton() -> some View {
+        Button {
+            self.dismiss()
+            self.onDelete(task)
+        } label: {
+            Image(systemName: "trash")
+                .foregroundColor(.red)
+        }
+        .disabled(showTextEditorPopup)
     }
     
     var isEditing: Bool { editMode == .active }
@@ -159,12 +183,26 @@ struct TaskDetailView: View {
         
         return minDate...maxDate
     }
+    
+    func commit() {
+        self.$task.title.wrappedValue = draftTask.title
+        self.$task.taskDescription.wrappedValue = draftTask.taskDescription
+        self.$task.dueTime.wrappedValue = draftTask.dueTime
+        self.$task.isImportant.wrappedValue = draftTask.isImportant
+        self.$task.isDone.wrappedValue = draftTask.isDone
+        self.$task.createdAt.wrappedValue = draftTask.createdAt
+    }
+    
+    func rollback() {
+        self.draftTask = .init(from: task)
+    }
+    
 }
 
 struct TaskDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            TaskDetailView(task: .init())
+            TaskDetailView(task: .init(), onDelete: { _ in })
         }
         .navigationViewStyle(.stack)
     }

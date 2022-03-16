@@ -58,22 +58,16 @@ struct FilterView: View {
                     Toggle("Uncomplete", isOn: $viewModel.showUncomplete)
                         .onChange(of: viewModel.showUncomplete) { _ in
                             viewModel.onValueChanged(with: .uncomplete)
-                            print("Initial: \(initialStatuses)")
-                            print("Selected: \(viewModel.selectedStatuses)")
                         }
                     
                     Toggle("Completed", isOn: $viewModel.showCompleted)
                         .onChange(of: viewModel.showCompleted) { _ in
                             viewModel.onValueChanged(with: .completed)
-                            print("Initial: \(initialStatuses)")
-                            print("Selected: \(viewModel.selectedStatuses)")
                         }
                     
                     Toggle("Important", isOn: $viewModel.showImportant)
                         .onChange(of: viewModel.showImportant) { _ in
                             viewModel.onValueChanged(with: .important)
-                            print("Initial: \(initialStatuses)")
-                            print("Selected: \(viewModel.selectedStatuses)")
                         }
                 }
                 .makeFilterToggleStyle()
