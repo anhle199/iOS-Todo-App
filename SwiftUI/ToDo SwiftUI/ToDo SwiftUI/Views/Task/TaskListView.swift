@@ -25,7 +25,10 @@ struct TaskListView: View {
                         .onChange(of: tasks[index]) { _ in
                             self.viewModel.isValueChanged.toggle()
                         }
-                        .onDisappear { self.selectedTaskIndex = nil }
+                        .onDisappear {
+                            self.selectedTaskIndex = nil
+                            self.viewModel.needsToResetDateIndex = true
+                        }
                 } else {
                     Text("No data")
                 }
@@ -43,6 +46,7 @@ struct TaskListView: View {
                         .onTapGesture {
                             self.selectedTaskIndex = index
                             self.isClickedTaskRow = true
+                            self.viewModel.needsToResetDateIndex = false
                         }
                         .onLongPressGesture {
                             self.selectedTaskIndex = index

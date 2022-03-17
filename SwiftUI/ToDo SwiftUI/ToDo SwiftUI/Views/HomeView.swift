@@ -12,7 +12,14 @@ struct HomeView: View {
     @ObservedResults(TaskItem.self) var tasks
     @EnvironmentObject var viewModel: HomeViewModel
     
+    // State variables are used for searching feature.
+    @State private var searchText = ""
+    @State private var showSearchBar = false
+    
+    // State variables are used for adding new task feature.
     @State private var showAddTaskView = false
+    
+    // State variables are used for filtering feature.
     @State private var showFilterView = false
     @State private var initialStatuses: Set<TaskStatus> = [.uncomplete, .completed]
     @State private var predicate: NSPredicate? = nil
@@ -21,18 +28,28 @@ struct HomeView: View {
         NavigationView {
             ZStack(alignment: .bottom) {
                 VStack(spacing: 0) {
+                    if showSearchBar {
+                        SearchBar(
+                            placeholder: "Type a task title here",
+                            text: $searchText,
+                            isShown: $showSearchBar,
+                            homeViewModel: viewModel
+                        )
+                    }
+                    
                     DateButtonsView()
                         .padding(.vertical, 8)
                         .environmentObject(viewModel)
                         .onAppear {
-                            viewModel.resetDateIndexToToday()
+                            if viewModel.needsToResetDateIndex {
+                                viewModel.resetDateIndexToToday()
+                                print("RESET")
+                            }
                         }
                     
                     TaskListView()
                         .environmentObject(viewModel)
                         .padding(.bottom, 2)
-//                    TaskListViewTemp()
-//                        .padding(.bottom, 2)
                     
                     if !showFilterView {
                         BottomBarView()
@@ -59,6 +76,7 @@ struct HomeView: View {
             }
             .navigationTitle("Tasks")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarHidden(showSearchBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     leadingBarItem
@@ -82,6 +100,15 @@ struct HomeView: View {
             }
             .onChange(of: viewModel.predicate) { newValue in
                 viewModel.filterAndSortTasks(from: tasks)
+            }
+            .onChange(of: viewModel.searchButtonClicked) { _ in
+                viewModel.filterAndSortTasks(
+                    from: tasks,
+                    containsTaskTitle: searchText
+                )
+            }
+            .onChange(of: showSearchBar) { newValue in
+                self.viewModel.needsToResetDateIndex = !newValue
             }
             .sheet(isPresented: $showAddTaskView) {
                 AddTaskView()
@@ -108,7 +135,7 @@ struct HomeView: View {
             }
             
             Button {
-                
+                self.showSearchBar = true
             } label: {
                 Image(systemName: Constants.IconName.search)
             }
@@ -117,9 +144,9 @@ struct HomeView: View {
     }
 }
 
-//struct HomeView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        HomeView()
-//            .environmentObject(HomeViewModel())
-//    }
-//}
+struct HomeView_Previews: PreviewProvider {
+    static var previews: some View {
+        HomeView()
+            .environmentObject(HomeViewModel())
+    }
+}

@@ -9,12 +9,14 @@ import Foundation
 import RealmSwift
 
 class HomeViewModel: ObservableObject {
-
+    
     @Published var daysOfWeek = DateManager.shared.daysOfWeek
     @Published var selectedDateIndex = 0
     @Published var displayedTasks = [TaskItem]()
     @Published var isValueChanged = false
     @Published var predicate: NSPredicate? = nil
+    @Published var searchButtonClicked = false
+    @Published var needsToResetDateIndex = true
     
     var countTasks: Int { displayedTasks.count }
     var countDates: Int { daysOfWeek.count }
@@ -36,20 +38,31 @@ class HomeViewModel: ObservableObject {
         self.selectedDateIndex = indexOfTodayInWeek ?? 0
     }
     
-    func filterAndSortTasks(from tasks: Results<TaskItem>) {
-        let selectedDate = daysOfWeek[selectedDateIndex]
-        
+    func filterAndSortTasks(
+        from tasks: Results<TaskItem>,
+        containsTaskTitle title: String? = nil
+    ) {
+        var tasksFilteredByPredicate = tasks
         if let predicate = predicate {
-            self.displayedTasks = tasks.filter(predicate.predicateFormat)
-                .filter { item in
-                    Calendar.current.isDate(item.dueTime, inSameDayAs: selectedDate)
-                }
-                .sorted(by: ascendingTaskItemComparator)
-        } else {
-            self.displayedTasks = tasks.filter { item in
-                Calendar.current.isDate(item.dueTime, inSameDayAs: selectedDate)
-            }.sorted(by: ascendingTaskItemComparator)
+            tasksFilteredByPredicate = tasks.filter(predicate.predicateFormat)
         }
+        
+        let selectedDate = daysOfWeek[selectedDateIndex]
+        self.displayedTasks = tasksFilteredByPredicate.filter { item in
+            let isSameDay = Calendar.current.isDate(
+                item.dueTime,
+                inSameDayAs: selectedDate
+            )
+            
+            var filterByTitleResult = true
+            if let title = title {
+                filterByTitleResult = item.title
+                    .localizedCaseInsensitiveContains(title)
+            }
+            
+            return isSameDay && filterByTitleResult
+        }
+        .sorted(by: ascendingTaskItemComparator)
     }
     
     private func ascendingTaskItemComparator(_ lhs: TaskItem, _ rhs: TaskItem) -> Bool {
@@ -81,47 +94,5 @@ class HomeViewModel: ObservableObject {
     var dateFormatterInMediumStyle: DateFormatter {
         DateManager.shared.getDateFormatter(withDateStyle: .medium)
     }
-    
-//    func createPrecidateFormat(forStates states: [TaskStatus]) -> NSPredicate? {
-//        var copiedStates = states
-//        
-//        // If the 'states' array contains both .uncomplete and .completed, all tasks is satified.
-//        if copiedStates.contains(.uncomplete) && copiedStates.contains(.completed) {
-//            copiedStates.removeAll(where: { $0 == .uncomplete || $0 == .completed })
-//        }
-//        
-//        var predicateFormat = ""
-//        var values = [NSNumber]()
-//        
-//        if let index = copiedStates.firstIndex(of: .important) {
-//            predicateFormat += "isImportant == %@ AND "
-//            values.append(.init(booleanLiteral: true))
-//            copiedStates.remove(at: index)
-//        }
-//        
-//        if !copiedStates.isEmpty {
-//            // copiedStates only contains .uncomplete or .completed
-//            
-//            let state = copiedStates.first
-//            switch state {
-//            case .uncomplete:
-//                predicateFormat += "isDone <> %@"
-//                values.append(.init(booleanLiteral: state == .uncomplete))
-//            case .completed:
-//                predicateFormat += "isDone == %@"
-//                values.append(.init(booleanLiteral: state == .completed))
-//            default:
-//                break
-//            }
-//        } else if !predicateFormat.isEmpty {
-//            predicateFormat.removeLast(5)  // remove " AND "
-//        }
-//        
-//        if predicateFormat.isEmpty {
-//            return nil
-//        } else {
-//            return NSPredicate(format: predicateFormat, values)
-//        }
-//    }
     
 }

@@ -27,12 +27,10 @@
 		E652199627DB9D2300DC2DA5 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E652199527DB9D2300DC2DA5 /* HomeView.swift */; };
 		E659131127DCABDB00E5FFFF /* FilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E659131027DCABDB00E5FFFF /* FilterViewModel.swift */; };
 		E678670F27DBB7A400B799D3 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678670E27DBB7A400B799D3 /* FilterView.swift */; };
-		E678671427DC44AC00B799D3 /* TaskListViewTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678671327DC44AC00B799D3 /* TaskListViewTemp.swift */; };
-		E678671727DC461C00B799D3 /* TaskRowTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678671627DC461C00B799D3 /* TaskRowTemp.swift */; };
 		E678671A27DC49B100B799D3 /* TaskStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678671927DC49B100B799D3 /* TaskStatus.swift */; };
 		E6BB0F0B27DF3AA4002F9FFA /* TaskDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6BB0F0A27DF3AA4002F9FFA /* TaskDetailView.swift */; };
-		E6BB0F0D27DF4C21002F9FFA /* TaskDetailViewTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6BB0F0C27DF4C21002F9FFA /* TaskDetailViewTemp.swift */; };
 		E6BB0F1027DF4D13002F9FFA /* TextEditorPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6BB0F0F27DF4D13002F9FFA /* TextEditorPopup.swift */; };
+		E6C1761D27E30B0B00228ECA /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C1761C27E30B0B00228ECA /* SearchBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,12 +53,10 @@
 		E652199527DB9D2300DC2DA5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		E659131027DCABDB00E5FFFF /* FilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewModel.swift; sourceTree = "<group>"; };
 		E678670E27DBB7A400B799D3 /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
-		E678671327DC44AC00B799D3 /* TaskListViewTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListViewTemp.swift; sourceTree = "<group>"; };
-		E678671627DC461C00B799D3 /* TaskRowTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRowTemp.swift; sourceTree = "<group>"; };
 		E678671927DC49B100B799D3 /* TaskStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskStatus.swift; sourceTree = "<group>"; };
 		E6BB0F0A27DF3AA4002F9FFA /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
-		E6BB0F0C27DF4C21002F9FFA /* TaskDetailViewTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailViewTemp.swift; sourceTree = "<group>"; };
 		E6BB0F0F27DF4D13002F9FFA /* TextEditorPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorPopup.swift; sourceTree = "<group>"; };
+		E6C1761C27E30B0B00228ECA /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +98,7 @@
 				E652199227DB962000DC2DA5 /* ViewModels */,
 				E62A573727DAED79008258D3 /* Models */,
 				E62A572D27DAEB70008258D3 /* Views */,
+				E6C1761E27E30E5100228ECA /* Supporting Views */,
 				E62A571E27DAEA0D008258D3 /* Assets.xcassets */,
 				E62A572027DAEA0D008258D3 /* Preview Content */,
 			);
@@ -131,12 +128,10 @@
 			isa = PBXGroup;
 			children = (
 				E6BB0F0E27DF4CF2002F9FFA /* Task */,
-				E678671527DC460F00B799D3 /* Temp */,
 				E62A573227DAEBD8008258D3 /* DateButtonsView.swift */,
 				E652198A27DB919200DC2DA5 /* BottomBarView.swift */,
 				E652199527DB9D2300DC2DA5 /* HomeView.swift */,
 				E678670E27DBB7A400B799D3 /* FilterView.swift */,
-				E6BB0F0F27DF4D13002F9FFA /* TextEditorPopup.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -182,16 +177,6 @@
 			path = "Button Styles";
 			sourceTree = "<group>";
 		};
-		E678671527DC460F00B799D3 /* Temp */ = {
-			isa = PBXGroup;
-			children = (
-				E678671627DC461C00B799D3 /* TaskRowTemp.swift */,
-				E678671327DC44AC00B799D3 /* TaskListViewTemp.swift */,
-				E6BB0F0C27DF4C21002F9FFA /* TaskDetailViewTemp.swift */,
-			);
-			path = Temp;
-			sourceTree = "<group>";
-		};
 		E678671827DC49A800B799D3 /* Enums */ = {
 			isa = PBXGroup;
 			children = (
@@ -209,6 +194,15 @@
 				E625E88F27E245FC00775A40 /* AddTaskView.swift */,
 			);
 			path = Task;
+			sourceTree = "<group>";
+		};
+		E6C1761E27E30E5100228ECA /* Supporting Views */ = {
+			isa = PBXGroup;
+			children = (
+				E6C1761C27E30B0B00228ECA /* SearchBar.swift */,
+				E6BB0F0F27DF4D13002F9FFA /* TextEditorPopup.swift */,
+			);
+			path = "Supporting Views";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -290,10 +284,10 @@
 			files = (
 				E678670F27DBB7A400B799D3 /* FilterView.swift in Sources */,
 				E652199127DB934700DC2DA5 /* RoundedCorner.swift in Sources */,
-				E678671427DC44AC00B799D3 /* TaskListViewTemp.swift in Sources */,
 				E652199627DB9D2300DC2DA5 /* HomeView.swift in Sources */,
 				E62A573327DAEBD8008258D3 /* DateButtonsView.swift in Sources */,
 				E62A573627DAEBF8008258D3 /* DateManager.swift in Sources */,
+				E6C1761D27E30B0B00228ECA /* SearchBar.swift in Sources */,
 				E6BB0F1027DF4D13002F9FFA /* TextEditorPopup.swift in Sources */,
 				E62A574227DAF62E008258D3 /* TaskListView.swift in Sources */,
 				E652198B27DB919200DC2DA5 /* BottomBarView.swift in Sources */,
@@ -304,8 +298,6 @@
 				E652199427DB965200DC2DA5 /* HomeViewModel.swift in Sources */,
 				E62A572C27DAEB28008258D3 /* Constants.swift in Sources */,
 				E652198E27DB931F00DC2DA5 /* View+RoundedCorner.swift in Sources */,
-				E6BB0F0D27DF4C21002F9FFA /* TaskDetailViewTemp.swift in Sources */,
-				E678671727DC461C00B799D3 /* TaskRowTemp.swift in Sources */,
 				E62A572F27DAEB81008258D3 /* DateButtonStyle.swift in Sources */,
 				E6BB0F0B27DF3AA4002F9FFA /* TaskDetailView.swift in Sources */,
 				E62A573927DAED9A008258D3 /* TaskItem.swift in Sources */,
