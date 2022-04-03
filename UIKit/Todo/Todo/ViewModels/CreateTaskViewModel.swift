@@ -10,6 +10,7 @@ import RealmSwift
 
 struct CreateTaskViewModel: DetailBaseViewModelProtocol {
     
+    var dueTime: Date
     var draftTaskItem: TaskItemNonRealmObject
     private let emptyTaskItem: TaskItemNonRealmObject
     
@@ -17,8 +18,10 @@ struct CreateTaskViewModel: DetailBaseViewModelProtocol {
         return draftTaskItem != emptyTaskItem
     }
     
-    init() {
+    init(dueTime: Date) {
+        self.dueTime = DateManager.shared.endTime(of: dueTime)
         self.draftTaskItem = TaskItemNonRealmObject()
+        self.draftTaskItem.dueTime = self.dueTime
         self.emptyTaskItem = draftTaskItem
     }
     
@@ -45,6 +48,7 @@ struct CreateTaskViewModel: DetailBaseViewModelProtocol {
     
     mutating func rollback(completion: (() -> Void)?) {
         self.draftTaskItem = TaskItemNonRealmObject()
+        self.draftTaskItem.dueTime = self.dueTime
         completion?()
     }
     

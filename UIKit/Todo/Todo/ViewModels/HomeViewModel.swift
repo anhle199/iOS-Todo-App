@@ -15,6 +15,13 @@ struct HomeViewModel {
     var sortedTaskItems = [TaskItem]()  // a sorted array of taskItems
     
     var selectingDateButtonIndex: Int?
+    var selectedDate: Date? {
+        if let index = selectingDateButtonIndex {
+            return DateManager.shared.daysOfWeek[index]
+        }
+        
+        return nil
+    }
     
     init() {
         self.realm = try? Realm()

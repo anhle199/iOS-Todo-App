@@ -18,7 +18,7 @@ class CreateTaskViewController: DetailBaseViewController {
     override init() {
         super.init()
         
-        self.viewModel = CreateTaskViewModel()
+        self.viewModel = CreateTaskViewModel(dueTime: .now)
         
         self.numberOfRowsInEachSection = [2, 2, 1]
         self.numberOfSections = numberOfRowsInEachSection.count
@@ -42,6 +42,11 @@ class CreateTaskViewController: DetailBaseViewController {
         ]
         
         self.heightForRowInSections = [44, 44, 200]
+    }
+    
+    convenience init(selectedDate: Date) {
+        self.init()
+        self.viewModel = CreateTaskViewModel(dueTime: selectedDate)
     }
     
     required init?(coder: NSCoder) {

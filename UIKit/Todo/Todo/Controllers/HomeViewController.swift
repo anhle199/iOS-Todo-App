@@ -389,7 +389,8 @@ class HomeViewController: UIViewController {
     }
     
     @objc private func didTapAddButton() {
-        let createTaskVC = CreateTaskViewController()
+        let selectedDate = viewModel.selectedDate ?? .now
+        let createTaskVC = CreateTaskViewController(selectedDate: selectedDate)
         createTaskVC.valueChangedDidSave = {
             self.reloadData()
         }

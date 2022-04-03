@@ -41,7 +41,7 @@ class TaskCollectionViewCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .systemBackground
         label.textAlignment = .left
-        label.font = .boldSystemFont(ofSize: 24)
+        label.font = .boldSystemFont(ofSize: 20)
         label.numberOfLines = 1
         label.backgroundColor = .clear
         
